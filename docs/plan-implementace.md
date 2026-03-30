@@ -69,6 +69,11 @@ Tento milník je důležitější než šíře funkcí.
 ### Cíl
 Nejdřív připravit technický základ, aby každá další změna šla bezpečně ověřit a nasadit.
 
+### Detailní rozpad fáze
+
+Podrobný prováděcí plán této etapy je rozepsaný v dokumentu
+[Detailní implementační plán: Fáze 0 - Základ repozitáře a delivery pipeline](faze-0-zaklad-repozitare-a-delivery-pipeline.md).
+
 ### Obsah
 
 - založit základní strukturu aplikace a konvence repozitáře,
