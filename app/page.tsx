@@ -1,21 +1,48 @@
 import { EnvironmentBadge } from "@/components/environment-badge";
+import { getEnvironmentConfig } from "@/lib/env";
 
 const nextSteps = [
-  "Doplnit konfiguraci prostredi a .env.example v ramci F0-03.",
   "Pripravit Supabase baseline, migrace a seed data v ramci F0-04.",
   "Navazat GitHub CI a Vercel deployment v ramci F0-05 a F0-06.",
+  "Dopsat smoke overeni a rollback postup v ramci F0-07.",
 ];
 
 export default function HomePage() {
+  const environment = getEnvironmentConfig();
+  const shortCommitSha = environment.commitSha?.slice(0, 7) ?? null;
+
   return (
     <main className="page">
       <section className="hero">
-        <p className="eyebrow">planovac / F0-02</p>
-        <h1>Minimalni aplikacni kostra je pripravena.</h1>
+        <div className="hero-header">
+          <div>
+            <p className="eyebrow">planovac / F0-03</p>
+            <h1>Konfigurace prostredi je pripravena pro dalsi fazi.</h1>
+          </div>
+          <EnvironmentBadge />
+        </div>
         <p className="lead">
           Tato stranka overuje, ze repozitar obsahuje nasaditelny app shell v
-          Next.js App Router a zakladni strukturu pro dalsi implementaci.
+          Next.js App Router, vzorovy soubor <code>.env.example</code> a
+          zretelne rozliseni rezimu local, preview a production.
         </p>
+        <div className="hero-meta" aria-label="Diagnostika prostredi">
+          <p>
+            Zdroj detekce: <code>{environment.source}</code> ={" "}
+            <code>{environment.sourceValue}</code>
+          </p>
+          <p>
+            Zakladni URL:{" "}
+            <code>{environment.baseUrl ?? "neni nastavena"}</code>
+          </p>
+          <p>
+            Deployment URL:{" "}
+            <code>{environment.deploymentUrl ?? "neni k dispozici"}</code>
+          </p>
+          <p>
+            Commit: <code>{shortCommitSha ?? "neni k dispozici"}</code>
+          </p>
+        </div>
       </section>
 
       <section className="status-grid" aria-label="Stav repozitare">
@@ -30,12 +57,31 @@ export default function HomePage() {
         <article className="card">
           <h2>Prostredi</h2>
           <p>
-            Aktualni rezim: <EnvironmentBadge />
+            {environment.description}
           </p>
-          <p>
-            Jemnejsi rozliseni local / preview / production bude dopsano v
-            navazujici konfiguraci prostredi.
-          </p>
+          <dl className="env-properties">
+            <div className="env-property">
+              <dt>Explicitni rezim</dt>
+              <dd>
+                <code>NEXT_PUBLIC_APP_ENV</code> ma prednost pred fallbackem z
+                platformy.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Fallback</dt>
+              <dd>
+                Pokud chybi explicitni hodnota, aplikace pouzije{" "}
+                <code>VERCEL_ENV</code> a az potom <code>NODE_ENV</code>.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Pravidlo</dt>
+              <dd>
+                Preview a production musi mit rozdilne URL i oddelene neveřejne
+                konfigurace.
+              </dd>
+            </div>
+          </dl>
         </article>
 
         <article className="card">
@@ -55,6 +101,20 @@ export default function HomePage() {
             </li>
           </ul>
         </article>
+      </section>
+
+      <section className="card next-steps">
+        <h2>F0-03 vystupy</h2>
+        <ul>
+          <li>
+            <code>.env.example</code> jako vychozi sablona pro lokalni setup
+          </li>
+          <li>
+            <code>docs/provoz/konfigurace-prostredi.md</code> jako matice
+            promennych a vlastnictvi secretu
+          </li>
+          <li>jednotna detekce prostredi v aplikaci i v UI</li>
+        </ul>
       </section>
 
       <section className="card next-steps">
