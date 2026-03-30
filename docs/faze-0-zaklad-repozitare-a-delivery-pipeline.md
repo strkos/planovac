@@ -110,47 +110,87 @@ Implementaci fáze 0 lze spustit až ve chvíli, kdy jsou dostupné tyto vstupy:
 
 Následující body nejsou v dosavadní dokumentaci explicitně uzavřené. Proto musí být v prvním implementačním kroku potvrzené jako **návrh rozhodnutí**, aby se zbytek fáze 0 neopíral o nejasné předpoklady.
 
-### 1. Konkrétní frontend stack
+### 1. Konkrétní frontend stack - uzavřeno
 
-Potvrzené je pouze to, že frontend bude hostovaný na Vercelu. Je potřeba výslovně zvolit:
+Pro fázi 0 je potvrzený následující výchozí frontend stack:
 
-- framework nebo runtime,
-- způsob buildování,
-- základní testovací a linting nástroje,
-- formát základní aplikační kostry.
+- **Next.js**
+- **TypeScript**
+- **React** jako aplikační runtime v rámci Next.js
+- **Next.js App Router** pro základní aplikační kostru
+- **ESLint** jako povinné minimum statické validace v CI
 
-Bez tohoto rozhodnutí nelze korektně dokončit build pipeline.
+Součástí tohoto rozhodnutí je i to, že:
 
-### 2. Model neprodukčních databázových prostředí
+- povinné minimum validace ve fázi 0 tvoří alespoň `install`, `lint` a `build`,
+- širší frontend tooling není blokátorem fáze 0,
+- detailnější volby jako komponentová knihovna, pokročilý state management nebo form knihovna se zatím neuzavírají a mohou být doplněné až podle potřeb MVP.
 
-Je třeba potvrdit, zda bude neprodukční provoz řešen:
+#### Odůvodnění
 
-- jedním sdíleným neprodukčním Supabase projektem,
-- nebo více oddělenými Supabase projekty.
+Tento stack má nejlepší kompatibilitu s hostováním na Vercelu a zároveň minimalizuje integrační práci v etapě, která je zaměřená hlavně na build, CI/CD a bezpečné rozlišení prostředí. Současně dává stabilní základ pro navazující fázi 1, kde bude potřeba přihlášení Uživatele, chráněná část aplikace a základní shell aplikace.
 
-Současně je nutné potvrdit, kde přesně bude použit model `schema-per-feature` pro preview data.
+### 2. Model neprodukčních databázových prostředí - uzavřeno
 
-### 3. Pravidla práce s produkčními daty v preview
+Pro fázi 0 je potvrzený následující model databázových prostředí:
 
-Z use journeys vyplývá, že preview má pracovat se snapshotem produkčních dat. Před implementací je potřeba potvrdit:
+- **1 produkční Supabase projekt** pro ostrý provoz,
+- **1 sdílený neprodukční Supabase projekt** pro preview a další neprodukční potřeby,
+- **local** běží odděleně v lokálním opakovatelném vývojovém setupu,
+- preview data jsou v neprodukčním projektu oddělená přes schémata `preview_<identifikator>`,
+- identifikátor preview schema má být navázaný na stabilní identifikátor změny, přednostně na **PR číslo**.
 
-- zda preview používá plný snapshot,
-- zda se některé osobní údaje anonymizují,
-- kdo a kdy snapshot vytváří,
-- kdy a jak se preview schema uklízí.
+Součástí tohoto rozhodnutí je i to, že model **schema-per-feature** se používá právě uvnitř sdíleného neprodukčního Supabase projektu, ne v produkční databázi a ne formou zakládání samostatného Supabase projektu pro každé preview.
 
-### 4. Minimální merge politika
+#### Odůvodnění
 
-Je nutné potvrdit:
+Tento model zachovává bezpečné oddělení produkce od preview, respektuje požadavek na **schema-per-feature** a současně drží nízkou provozní náročnost. Je tedy vhodný pro menší spolek i pro ranou delivery fázi, kde je důležitější jednoduchý a opakovatelný provoz než maximalistická infrastruktura.
 
-- zda je merge do `main` povolen jen přes pull request,
-- které CI kontroly budou povinné,
-- zda je dovoleno squash merge, merge commit nebo rebase merge,
-- kdo může obejít ochranu branch pravidel.
+### 3. Pravidla práce s produkčními daty v preview - uzavřeno
+
+Pro fázi 0 se potvrzuje tento model preview snapshotů:
+
+- preview používá **anonymizovaný snapshot produkčních dat**, ne plný surový snapshot,
+- minimálně kontaktní údaje Uživatelů, jako jsou jméno, email a telefon, se do preview nepřenášejí v produkční podobě,
+- u vybraných Uživatelů jsou anonymizované údaje mapované **stabilně** na konkrétní neprodukční identity,
+- toto stabilní mapování je uložené v **produkční databázi** jako řízená technická konfigurace pro generování neprodukčních snapshotů,
+- pro ostatní Uživatele lze použít standardní anonymizaci bez požadavku na dlouhodobě stabilní identitu,
+- preview aplikace pracuje výhradně s daty uvnitř schema `preview_<identifikator>`,
+- cleanup preview schemat probíhá po merge, po uzavření pull requestu bez merge a zároveň existuje expirační fallback pro případ selhání standardního úklidu.
+
+#### Odůvodnění
+
+Anonymizace chrání osobní údaje a současně zachovává realistický tvar dat pro testování. Stabilní mapování vybraných Uživatelů na konkrétní neprodukční identity usnadňuje testování funkcí navázaných na kontaktní údaje, protože stejné testovací identity zůstávají konzistentní napříč více preview snapshoty. Uložení mapování do produkční databáze umožňuje řízenou, auditovatelnou a opakovatelnou tvorbu snapshotů bez ruční improvizace.
+
+### 4. Minimální merge politika - uzavřeno
+
+Pro fázi 0 se potvrzuje tato minimální merge politika:
+
+- merge do `main` je povolen **pouze přes pull request**,
+- přímý push do `main` je zakázaný,
+- pull request musí projít povinnými status checks, minimálně `install`, `lint` a `build`,
+- změny zasahující databázové artefakty musí navíc projít odpovídající kontrolou migrací nebo databázových artefaktů,
+- výchozí merge režim je **squash merge**,
+- `merge commit` ani `rebase merge` se pro fázi 0 nepoužívají,
+- branch protection mohou obejít pouze určení správci repozitáře.
+
+#### Odůvodnění
+
+Tato pravidla zajišťují, že se cíl fáze 0 opravdu promítne do reálné práce s repozitářem. Pull request jako jediná cesta do `main` přirozeně váže dohromady CI, preview nasazení a review změny. Povinné kontroly `install`, `lint` a `build` odpovídají minimálnímu technickému základu této etapy a **squash merge** současně udržuje historii `main` čitelnou i při rychlých iteracích.
 
 ## Doporučený cílový obraz pro fázi 0
 
 Následující část je **návrh technického směru**, který je kompatibilní se stávajícím zadáním a dává dobrý základ pro další fáze.
+
+### Frontend stack
+
+Pro výchozí implementaci fáze 0 je potvrzený tento směr:
+
+- aplikace bude založená na **Next.js**,
+- kód bude psaný v **TypeScriptu**,
+- základ aplikační kostry bude stavět na **Next.js App Router**,
+- minimální CI validace bude obsahovat alespoň `lint` a `build`,
+- styling a širší UI vrstva nejsou v této fázi samostatným blokujícím rozhodnutím.
 
 ### Prostředí
 
@@ -162,14 +202,30 @@ Doporučené minimální rozdělení prostředí:
 
 ### Datový model prostředí
 
-Doporučený výchozí model:
+Pro výchozí implementaci fáze 0 je potvrzený tento model:
 
-- produkce běží na produkčním Supabase prostředí,
-- lokální vývoj používá lokální Supabase nebo jiný opakovatelný neprodukční setup,
-- preview prostředí používá neprodukční Supabase kontext,
-- data pro jednotlivé preview verze jsou oddělena ve schématech `preview_<identifikator>`.
+- produkce běží v samostatném produkčním Supabase projektu,
+- lokální vývoj používá lokální Supabase nebo jiný opakovatelný lokální neprodukční setup,
+- preview prostředí používá sdílený neprodukční Supabase projekt,
+- data pro jednotlivé preview verze jsou v tomto neprodukčním projektu oddělena ve schématech `preview_<identifikator>`,
+- identifikátor preview schema je navázaný na stabilní identifikátor změny, přednostně PR číslo.
 
-Tento návrh respektuje požadavek na **schema-per-feature** a současně nevyžaduje, aby každé preview zakládalo nový samostatný produkční projekt.
+Tento model respektuje požadavek na **schema-per-feature**, zachovává čistou hranici vůči produkci a současně nevyžaduje zakládání samostatného Supabase projektu pro každé preview.
+
+### Pravidla práce s produkčními daty v preview
+
+Pro výchozí implementaci fáze 0 se potvrzuje tento model preview snapshotů:
+
+- preview používá **anonymizovaný snapshot produkčních dat**, ne plný surový snapshot,
+- minimálně kontaktní údaje Uživatelů, jako jsou jméno, email a telefon, se do preview nepřenášejí v produkční podobě,
+- u vybraných Uživatelů jsou anonymizované údaje mapované **stabilně** na konkrétní neprodukční údaje, aby se stejný Uživatel v různých preview snapshotch zobrazoval konzistentně,
+- toto stabilní mapování je uložené v **produkční databázi** jako řízená technická konfigurace pro generování neprodukčních snapshotů,
+- pro ostatní Uživatele lze použít standardní anonymizaci bez požadavku na dlouhodobě stabilní identitu,
+- preview aplikace pracuje výhradně s daty uvnitř schema `preview_<identifikator>`.
+
+#### Odůvodnění
+
+Anonymizace chrání osobní údaje a současně zachovává realistický tvar dat pro testování. Stabilní mapování vybraných Uživatelů na konkrétní neprodukční identity navíc usnadňuje testování funkcí navázaných na kontaktní údaje, protože stejné testovací identity zůstávají konzistentní napříč více preview snapshoty. Uložení mapování do produkční databáze umožňuje řízenou, auditovatelnou a opakovatelnou tvorbu snapshotů bez ruční improvizace.
 
 ### Správa databázových změn
 
@@ -188,6 +244,17 @@ Doporučené pravidlo:
 - každé prostředí má vlastní sadu hodnot,
 - server-side citlivé klíče se nikdy nepoužijí v klientské části aplikace.
 
+### Merge politika a ochrana větví
+
+Pro výchozí implementaci fáze 0 je potvrzený tento režim:
+
+- `main` přijímá změny pouze přes pull request,
+- povinné status checks jsou minimálně `install`, `lint` a `build`,
+- změny zasahující databázové artefakty musí mít i odpovídající databázovou kontrolu,
+- výchozí merge režim je **squash merge**,
+- přímý push do `main` je zakázaný,
+- branch protection mohou obejít pouze určení správci repozitáře.
+
 ## Pracovní proudy fáze 0
 
 Fáze 0 má být rozdělena do samostatných pracovních proudů, které lze převést na samostatné issues nebo malé pull requesty.
@@ -201,7 +268,7 @@ Založit minimální aplikační kostru a sjednotit pravidla, podle kterých bud
 ### Konkrétní kroky
 
 1. Zvolit a potvrdit frontend stack kompatibilní s Vercel.
-2. Založit minimální aplikaci, která projde buildem a umí se nasadit.
+2. Založit minimální aplikaci v potvrzeném stacku Next.js + TypeScript, která projde buildem a umí se nasadit.
 3. Zavést základní strukturu adresářů pro:
    - aplikaci,
    - sdílené utility,
@@ -211,19 +278,20 @@ Založit minimální aplikační kostru a sjednotit pravidla, podle kterých bud
 4. Přidat základní konvence pro:
    - pojmenování souborů,
    - způsob konfigurace prostředí,
-   - přípravu skriptů pro build a validaci.
+   - přípravu skriptů pro `lint` a `build`.
 5. Přidat dokument s lokálním startem projektu.
 
 ### Výstupy
 
 - první minimální aplikace v repozitáři,
 - jednotná struktura složek,
-- dokumentovaný postup `install -> run -> build`.
+- dokumentovaný postup `install -> run -> lint -> build`.
 
 ### Definition of Done
 
 - nový vývojář nebo agent zvládne repozitář spustit podle dokumentace,
 - build proběhne bez ručních kroků mimo popsaný setup,
+- lint proběhne bez ručních kroků mimo popsaný setup,
 - repozitář má jasné místo pro aplikaci, databázi i provozní dokumentaci.
 
 ## Proud B: Správa prostředí a proměnných
@@ -285,22 +353,33 @@ Připravit opakovatelný základ pro databázové změny tak, aby další fáze 
    - aplikace v produkci.
 4. Připravit první baseline migraci nebo výchozí databázový základ podle zvoleného nástroje.
 5. Připravit seed nebo demo data pro minimální smoke scénář.
-6. Navrhnout naming konvenci pro preview schema:
-   - například podle feature branch nebo PR čísla,
+6. Zavést naming konvenci pro preview schema:
+   - ve tvaru `preview_<identifikator>`,
+   - kde identifikátor odpovídá přednostně PR číslu,
    - s pravidlem pro cleanup.
-7. Popsat, jak bude v budoucnu vznikat snapshot produkčních dat do preview, i pokud samotná automatizace ještě nebude v první iteraci plně hotová.
+7. Popsat, jak bude vznikat anonymizovaný snapshot produkčních dat do preview:
+   - které údaje jsou vždy anonymizované,
+   - kteří Uživatelé mají stabilní mapování na konkrétní neprodukční identity,
+   - kde je toto mapování uložené v produkční databázi,
+   - jak se mapování používá při generování preview snapshotu.
+8. Popsat lifecycle preview dat:
+   - vytvoření schema při vzniku preview,
+   - použití snapshotu pouze v rámci daného preview,
+   - cleanup po merge, po uzavření PR bez merge a přes expirační fallback.
 
 ### Výstupy
 
 - verzované migrace v repozitáři,
 - seed data pro lokální a preview ověření,
-- dokumentovaný lifecycle preview schema.
+- dokumentovaný lifecycle preview schema,
+- dokumentovaný postup stabilní anonymizace vybraných Uživatelů v preview snapshotu.
 
 ### Definition of Done
 
 - databázovou změnu lze vytvořit a přenést do dalšího prostředí standardním postupem,
 - seed data lze opakovaně nahrát bez ruční improvizace,
-- je jasné, jak se bude jmenovat a uklízet preview schema.
+- je jasné, jak se bude jmenovat a uklízet preview schema ve sdíleném neprodukčním projektu,
+- je popsané, jak vzniká anonymizovaný preview snapshot a jak se u vybraných Uživatelů používá stabilní mapování neprodukčních kontaktních údajů.
 
 ## Proud D: Vercel projekt a deployment
 
@@ -349,7 +428,7 @@ Nastavit takovou kontrolní vrstvu, aby se rozbitá nebo neúplná změna nedost
 2. Zařadit do minimálního běhu:
    - instalaci závislostí,
    - build,
-   - lint nebo jinou statickou validaci,
+   - lint jako povinnou statickou validaci,
    - případně kontrolu databázových artefaktů.
 3. Připravit selhání při:
    - chybějících proměnných,
@@ -357,8 +436,10 @@ Nastavit takovou kontrolní vrstvu, aby se rozbitá nebo neúplná změna nedost
    - nekompatibilní databázové změně.
 4. Sepsat pravidla merge politiky:
    - merge jen přes pull request,
-   - povinné status checks,
-   - minimální požadavky na review, pokud budou používány.
+   - povinné status checks `install`, `lint` a `build`,
+   - databázovou kontrolu pro změny databázových artefaktů,
+   - výchozí použití `squash merge`,
+   - omezení bypassu branch protection jen na určené správce repozitáře.
 5. Nastavit ochranu větve `main` tak, aby odpovídala dokumentaci.
 
 ### Výstupy
@@ -369,8 +450,8 @@ Nastavit takovou kontrolní vrstvu, aby se rozbitá nebo neúplná změna nedost
 
 ### Definition of Done
 
-- pull request nelze považovat za připravený bez zeleného CI,
-- `main` je chráněná proti obcházení standardního toku,
+- pull request nelze považovat za připravený bez zelených povinných kontrol `install`, `lint` a `build`,
+- `main` je chráněná proti obcházení standardního toku a nepřijímá přímý push,
 - pravidla v GitHubu odpovídají tomu, co je napsané v dokumentaci.
 
 ## Proud F: Smoke ověření a minimální provozní rutina
@@ -426,7 +507,8 @@ Níže je doporučené pořadí tak, aby se co nejdříve dostavil funkční tec
 4. **Přidat databázový základ**
    - migrace,
    - seed data,
-   - popis preview schema konvence.
+   - popis preview schema konvence,
+   - popis anonymizovaného preview snapshotu a stabilního mapování vybraných Uživatelů.
 
 5. **Zprovoznit CI v GitHubu**
    - install,
@@ -455,15 +537,15 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 
 ### F0-01: Potvrzení technických rozhodnutí
 
-- uzavřít stack,
+- potvrdit a zapsat stack Next.js + TypeScript + App Router + ESLint,
 - uzavřít model prostředí,
 - uzavřít merge politiku,
 - zapsat rozhodnutí do dokumentace.
 
 ### F0-02: Založení minimální aplikace
 
-- vytvořit nasaditelný app shell,
-- doplnit základní build skripty,
+- vytvořit nasaditelný app shell v Next.js App Router,
+- doplnit základní skripty pro `lint` a `build`,
 - ověřit lokální běh.
 
 ### F0-03: Konfigurace prostředí a secretů
@@ -476,7 +558,9 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 
 - založit migrace,
 - připravit seed data,
-- popsat preview schema naming a cleanup.
+- popsat preview schema naming a cleanup ve sdíleném neprodukčním projektu,
+- navrhnout a popsat mechanismus stabilního mapování vybraných Uživatelů na neprodukční kontaktní údaje,
+- popsat uložení tohoto mapování v produkční databázi a jeho použití při tvorbě snapshotu.
 
 ### F0-05: GitHub CI
 
@@ -507,16 +591,18 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 
 Před prvním kódovým PR mají být potvrzené tyto body:
 
-- [ ] je potvrzený frontend stack,
-- [ ] je potvrzený model local / preview / production,
+- [x] je potvrzený frontend stack: Next.js + TypeScript + App Router + ESLint,
+- [x] je potvrzený model local / preview / production,
 - [ ] je určený vlastník Vercel projektu,
 - [ ] je určený vlastník Supabase prostředí,
 - [ ] je jasné, kdo spravuje produkční secrety,
-- [ ] je potvrzená merge politika do `main`,
-- [ ] je rozhodnuto, jak se bude identifikovat preview schema,
-- [ ] je určeno, zda preview data používají plný nebo anonymizovaný snapshot,
-- [ ] je jasné, jak bude probíhat cleanup preview schemat,
-- [ ] je schválené minimální CI minimum: install, build, validace.
+- [x] je potvrzená merge politika do `main`,
+- [x] je rozhodnuto, jak se bude identifikovat preview schema, přednostně pomocí PR čísla,
+- [x] je určeno, že preview data používají anonymizovaný snapshot místo plného surového snapshotu,
+- [x] je rozhodnuto, kteří Uživatelé mají stabilní mapování na konkrétní neprodukční kontaktní údaje,
+- [x] je určeno, že mapování anonymizovaných identit je uložené v produkční databázi,
+- [x] je jasné, jak bude probíhat cleanup preview schemat,
+- [x] je schválené minimální CI minimum: install, lint, build a odpovídající databázová kontrola pro změny databázových artefaktů.
 
 ## Checklist uzavření fáze 0
 
