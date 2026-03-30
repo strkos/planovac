@@ -30,6 +30,17 @@ Pokud změna zasahuje jak obecnou specifikaci, tak chování z pohledu uživatel
 - Piš srozumitelně pro organizátory, běžné členy i budoucí implementační agenty.
 - Upřednostňuj strukturovaný Markdown: nadpisy, seznamy a krátké odstavce místo dlouhé souvislé prózy.
 
+## Potvrzené technologické volby
+
+Následující technologická rozhodnutí jsou v tomto repozitáři již potvrzená a další agenti je mají považovat za závazná, nikoli za otevřené návrhy:
+
+- Hosting frontendu: **Vercel.com**
+- Uložení dat: **Supabase.com**
+- Autentizace: **OIDC/OAuth**, s tím, že výchozím poskytovatelem je **Supabase**
+- Vývoj a spolupráce: **GitHub**, a to včetně samoobslužného rozvoje aplikace
+
+Pokud budou budoucí dokumenty popisovat technickou architekturu, deployment nebo vývojový workflow, musí z těchto voleb vycházet.
+
 ## Kanonická terminologie domény
 
 Následující pojmy zachovej, pokud uživatel výslovně nepožádá o změnu domény:
@@ -69,7 +80,8 @@ Důležitá pravidla, která už dnes v dokumentaci existují:
 
 ### Při doplňování implementačních detailů
 
-- Nevymýšlej konkrétní framework, databázovou technologii, hosting ani API kontrakt, pokud to uživatel výslovně nechce.
+- Nevymýšlej nové konkrétní frameworky, databázové technologie, hosting nebo API kontrakty, pokud to uživatel výslovně nechce.
+- Respektuj už potvrzené technologické volby v tomto souboru: Vercel pro frontend hosting, Supabase pro data, OIDC/OAuth se Supabase jako výchozím poskytovatelem identity a GitHub jako vývojovou platformu.
 - Pokud je potřeba navrhnout technické řešení, označ ho jasně jako **návrh** nebo ho odděl do samostatného návrhového dokumentu.
 
 ### Při přidávání nových souborů
