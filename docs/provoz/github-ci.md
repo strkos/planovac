@@ -6,7 +6,7 @@ Jeho cilem je:
 
 - popsat workflow spoustene pro pull requesty a zmeny v `main`,
 - vymezit minimalni povinne status checks pro merge do `main`,
-- zapsat, jake validace repo aktualne provadi nad konfiguraci a databazovymi artefakty.
+- zapsat, jake validace repo aktualne provadi nad konfiguraci, Vercel integraci a databazovymi artefakty.
 
 ## Umisteni workflow
 
@@ -66,6 +66,19 @@ Build job navic explicitne hlida, ze commitovana konfigurace zustava opakovateln
 - `npm run validate:supabase`.
 
 Tento job dava samostatny status check pro repozitarove artefakty, ktere jsou dulezite pro navazujici preview a databazove iterace.
+
+## Validace Vercel konfigurace
+
+Skript `scripts/validate-vercel-config.mjs` overuje, ze:
+
+- `vercel.json` existuje v rootu repozitare,
+- je navazany na aktualni Vercel schema,
+- pouziva `nextjs` framework preset,
+- instalace probiha pres `npm ci`,
+- build a dev rezim pouzivaji standardni npm skripty repozitare,
+- branch `main` neni omylem vyradena z automatickych deploymentu.
+
+Tato validace nenahrazuje skutecne propojeni s Vercel projektem, ale hlida, aby commitnuta cast F0-06 zustala konzistentni.
 
 ## Validace `.env.example`
 

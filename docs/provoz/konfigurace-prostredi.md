@@ -31,9 +31,13 @@ Toto pravidlo je důležité proto, aby:
 | --- | --- | --- | --- | --- | --- |
 | `NEXT_PUBLIC_APP_ENV` | `local \| preview \| production` | veřejná | F0-03 | Explicitní identifikace prostředí v UI i aplikační logice. | lokální `.env.local`, Vercel env vars |
 | `NEXT_PUBLIC_APP_BASE_URL` | URL | veřejná | F0-03 | Kanonická URL běžící aplikace pro odkazy, diagnostiku a budoucí smoke ověření. | lokální `.env.local`, Vercel env vars |
+| `VERCEL_TARGET_ENV` | `development \| preview \| production \| <custom>` | platformní | F0-06 | Přesnější fallback detekce cílového prostředí při běhu na Vercelu. | nastavuje Vercel |
 | `VERCEL_ENV` | `development \| preview \| production` | platformní | F0-03 | Fallback detekce prostředí při běhu na Vercelu. | nastavuje Vercel |
-| `VERCEL_URL` | hostname | platformní | F0-03 | Diagnostická informace o aktuálním preview nebo deployment hostu. | nastavuje Vercel |
+| `VERCEL_URL` | hostname | platformní | F0-03 | Diagnostická informace o aktuálním deployment hostu. | nastavuje Vercel |
+| `VERCEL_BRANCH_URL` | hostname | platformní | F0-06 | Diagnostická informace o branch URL preview deploymentu. | nastavuje Vercel |
+| `VERCEL_PROJECT_PRODUCTION_URL` | hostname | platformní | F0-06 | Kanonická produkční doména projektu pro porovnání preview a production režimu. | nastavuje Vercel |
 | `VERCEL_GIT_COMMIT_SHA` | SHA | platformní | F0-03 | Dohledatelnost běžící verze v preview nebo production. | nastavuje Vercel |
+| `VERCEL_GIT_COMMIT_REF` | branch | platformní | F0-06 | Dohledatelnost větve, ze které preview nebo deployment vznikl. | nastavuje Vercel |
 | `GITHUB_SHA` | SHA | CI | F0-03 | Fallback identifikace commitu mimo Vercel runtime. | nastavuje GitHub Actions |
 | `NEXT_PUBLIC_SUPABASE_URL` | URL | veřejná | F0-04 | Klientská komunikace s veřejným Supabase API po doplnění autentizace a datové vrstvy. | lokální `.env.local`, Vercel env vars |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | token | veřejná | F0-04 | Veřejný anon klíč pro klientské napojení na Supabase. | lokální `.env.local`, Vercel env vars |
@@ -71,7 +75,7 @@ Typicky sem patří:
 
 ### Platformní proměnné
 
-Hodnoty jako `VERCEL_ENV`, `VERCEL_URL` nebo `GITHUB_SHA` se nespravují ručně jako produktové secrety. Jsou poskytované platformou a aplikace je používá jen jako diagnostický a fallback vstup.
+Hodnoty jako `VERCEL_TARGET_ENV`, `VERCEL_ENV`, `VERCEL_URL`, `VERCEL_BRANCH_URL`, `VERCEL_PROJECT_PRODUCTION_URL` nebo `GITHUB_SHA` se nespravují ručně jako produktové secrety. Jsou poskytované platformou a aplikace je používá jen jako diagnostický a fallback vstup.
 
 ## Doporučené hodnoty podle prostředí
 
@@ -87,7 +91,7 @@ Lokální prostředí je výchozí pro vývoj a má být snadno opakovatelné be
 - `NEXT_PUBLIC_APP_ENV=preview`
 - `NEXT_PUBLIC_APP_BASE_URL=https://<preview-host>`
 
-Preview musí být jasně oddělené od produkce v UI i konfiguraci. Pro databázi má v navazující fázi používat sdílený neprodukční Supabase projekt a schéma `preview_<identifikator>`.
+Preview musí být jasně oddělené od produkce v UI i konfiguraci. Pro databázi má v navazující fázi používat sdílený neprodukční Supabase projekt a schéma `preview_<identifikator>`. Ve F0-06 se navíc doporučuje zapnout ve Vercelu **Automatically expose System Environment Variables**, aby aplikace mohla zobrazovat branch URL, produkční URL a commit přímo v diagnostice.
 
 ### production
 
@@ -118,5 +122,5 @@ F0-03 zavedlo základ konfigurace prostředí a F0-04 na něj navázalo databáz
 
 - **F0-04** doplnilo první Supabase migrace, seed data, preview schema workflow a samostatný dokument [Supabase baseline a preview schema workflow](supabase-baseline-a-preview-schema.md),
 - **F0-05** doplnilo GitHub CI workflow a validace nekompletní konfigurace i databázových artefaktů,
-- **F0-06** doplní konkrétní mapování proměnných do Vercel preview a production prostředí,
+- **F0-06** doplnilo konkrétní mapování proměnných do Vercel preview a production prostředí a runbook [Vercel integrace](vercel-integrace.md),
 - **F1** doplní proměnné pro autentizaci Uživatele.

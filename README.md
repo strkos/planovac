@@ -1,6 +1,6 @@
 # planovac
 
-Repozitář aktuálně obsahuje produktovou a požadavkovou dokumentaci k aplikaci pro správu spolku a také minimální aplikační kostru pro implementaci fáze 0 včetně prvního Supabase baseline a GitHub CI validací.
+Repozitář aktuálně obsahuje produktovou a požadavkovou dokumentaci k aplikaci pro správu spolku a také minimální aplikační kostru pro implementaci fáze 0 včetně prvního Supabase baseline, GitHub CI validací a repo-side Vercel integrace.
 
 ## Minimální aplikace
 
@@ -11,13 +11,15 @@ V repozitáři je připravený základ aplikace v potvrzeném stacku:
 - App Router
 - ESLint
 
-Současně repozitář obsahuje výstupy etap F0-04 a F0-05:
+Současně repozitář obsahuje výstupy etap F0-04 až F0-06:
 
 - verzovanou migraci v `supabase/migrations/`
 - demo seed data v `supabase/seed/`
 - provozní popis preview schémat a anonymizovaných snapshotů
 - GitHub Actions workflow v `.github/workflows/ci.yml`
-- validační skripty pro `.env.example` a Supabase artefakty v `scripts/`
+- validační skripty pro `.env.example`, Supabase artefakty a Vercel konfiguraci v `scripts/`
+- základní `vercel.json` pro preview a production deployment
+- diagnostiku prostředí, URL a commitu na domovské stránce aplikace
 
 Lokální spuštění a ověření je popsané v dokumentu [Lokální start projektu](docs/provoz/lokalni-start.md).
 
@@ -43,4 +45,5 @@ npm run build
 - [Cloud agent environment pro Node/npm](docs/provoz/cloud-agent-environment.md)
 - [GitHub CI](docs/provoz/github-ci.md)
 - [Konfigurace prostředí](docs/provoz/konfigurace-prostredi.md)
+- [Vercel integrace](docs/provoz/vercel-integrace.md)
 - [Supabase baseline a preview schema workflow](docs/provoz/supabase-baseline-a-preview-schema.md)

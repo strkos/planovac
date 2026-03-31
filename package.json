@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "ci:validate": "npm run validate:env-example && npm run validate:supabase",
+    "ci:validate": "npm run validate:env-example && npm run validate:supabase && npm run validate:vercel",
     "validate:env-example": "node ./scripts/validate-env-example.mjs",
-    "validate:supabase": "node ./scripts/validate-supabase-artifacts.mjs"
+    "validate:supabase": "node ./scripts/validate-supabase-artifacts.mjs",
+    "validate:vercel": "node ./scripts/validate-vercel-config.mjs"
   },
   "repository": {
     "type": "git",
