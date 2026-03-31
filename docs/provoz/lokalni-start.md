@@ -1,6 +1,6 @@
 # Lokální start projektu
 
-Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace**, **F0-03: Konfigurace prostředí a secretů** a **F0-04: Supabase baseline**.
+Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace**, **F0-03: Konfigurace prostředí a secretů**, **F0-04: Supabase baseline** a **F0-05: GitHub CI**.
 
 ## Předpoklady
 
@@ -75,6 +75,18 @@ npm run lint
 ```bash
 npm run build
 ```
+
+## Repo validace
+
+```bash
+npm run ci:validate
+```
+
+Tento krok lokálně ověří stejnou minimální vrstvu commitovaných artefaktů, kterou používá i GitHub CI:
+
+- přítomnost a výchozí hodnoty důležitých klíčů v `.env.example`,
+- přítomnost verzovaných Supabase migrací,
+- přítomnost demo seed dat v `supabase/seed/seed.sql`.
 
 ## Co je součástí minimální kostry
 

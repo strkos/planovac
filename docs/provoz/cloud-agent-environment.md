@@ -73,6 +73,7 @@ Tato podmínka je vhodná i do sdíleného environmentu pro více repozitářů,
 Po proběhnutí bootstrapu má v rootu repozitáře projít:
 
 ```bash
+npm run ci:validate
 npm run lint
 npm run build
 ```
