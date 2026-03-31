@@ -171,6 +171,28 @@ Bezpecny stav:
 - production nepouziva preview host,
 - v sekci **Kontrola mapovani** neni chyba.
 
+## Smoke scenar F0-07
+
+F0-07 navazuje na vizualni diagnostiku i strojove citelnym endpointem:
+
+- `GET /api/health` vraci JSON s poli `ok`, `status`, `environment`, `commitSha`, `baseUrl` a `checks`,
+- pri konzistentnim nasazeni vraci HTTP `200`,
+- pri nalezene nekonzistenci vraci HTTP `503`, aby slo problem odhalit i bez otevreni homepage.
+
+Minimalni smoke scenar po preview nebo production deployi:
+
+1. nastavte `SMOKE_BASE_URL` na URL nasazene aplikace,
+2. spustte `npm run smoke`,
+3. overte, ze skript uspesne zavola `/api/health`,
+4. overte, ze homepage obsahuje F0-07 diagnostiku a odkaz na zdravotni endpoint.
+
+Smoke skript zamerne neprovadi zapis do databaze ani autentizovane kroky. V teto etape overuje:
+
+- dostupnost bezici aplikace,
+- konzistenci runtime diagnostiky prostredi,
+- dohledatelnost commitu a base URL,
+- pritomnost hlavni diagnosticke plochy v UI.
+
 ## Chovani aplikace pri nekonzistenci
 
 Diagnostika v aplikaci umi zachytit zejmena:
@@ -198,6 +220,6 @@ Tento dokument zamerne neresi automatizovane rollbacky databaze. To patri do nav
 
 ## Vazba na dalsi etapy
 
-- **F0-07** navaze realnym smoke scenarem nad preview a production deploymentem,
+- **F0-07** doplnuje realny smoke scenar nad preview a production deploymentem,
 - **F0-08** overi zkusebni delivery pruchod pres PR a merge,
 - **F1** doplni autentizaci a navazujici secret management.
