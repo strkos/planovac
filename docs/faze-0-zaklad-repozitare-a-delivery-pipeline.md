@@ -573,7 +573,9 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 
 - propojit repozitář a Vercel,
 - nastavit preview a production,
-- doplnit environment variables.
+- doplnit environment variables,
+- commitnout repo-side `vercel.json`, validační skript a diagnostiku prostředí,
+- dopsat provozní runbook pro mapování preview a production proměnných ve Vercelu.
 
 ### F0-07: Smoke test a diagnostika
 

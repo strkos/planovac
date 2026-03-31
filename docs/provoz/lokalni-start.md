@@ -1,6 +1,6 @@
 # Lokální start projektu
 
-Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace**, **F0-03: Konfigurace prostředí a secretů**, **F0-04: Supabase baseline** a **F0-05: GitHub CI**.
+Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace**, **F0-03: Konfigurace prostředí a secretů**, **F0-04: Supabase baseline**, **F0-05: GitHub CI** a **F0-06: Vercel integrace**.
 
 ## Předpoklady
 
@@ -46,7 +46,7 @@ Pro lokální běh zůstává výchozí hodnota:
 NEXT_PUBLIC_APP_ENV=local
 ```
 
-Přehled všech proměnných, jejich významu a správy je popsaný v dokumentu [Konfigurace prostředí](konfigurace-prostredi.md).
+Přehled všech proměnných, jejich významu a správy je popsaný v dokumentu [Konfigurace prostředí](konfigurace-prostredi.md). Repo-side nastavení Vercelu, mapování preview a production prostředí a postup ověření jsou popsané v dokumentu [Vercel integrace](vercel-integrace.md).
 
 Pokud chcete lokálně připravit i databázové artefakty pro navazující iterace, použijte:
 
@@ -86,7 +86,8 @@ Tento krok lokálně ověří stejnou minimální vrstvu commitovaných artefakt
 
 - přítomnost a výchozí hodnoty důležitých klíčů v `.env.example`,
 - přítomnost verzovaných Supabase migrací,
-- přítomnost demo seed dat v `supabase/seed/seed.sql`.
+- přítomnost demo seed dat v `supabase/seed/seed.sql`,
+- přítomnost minimální repo-side Vercel konfigurace v `vercel.json`.
 
 ## Co je součástí minimální kostry
 
@@ -99,7 +100,7 @@ Tento krok lokálně ověří stejnou minimální vrstvu commitovaných artefakt
 - `docs/provoz/` - provozní dokumentace
 - `.github/workflows/` - GitHub CI workflow a navazující delivery automatizace
 
-## Co přidává F0-04 a F0-05
+## Co přidává F0-04 az F0-06
 
 ### F0-04
 
@@ -116,6 +117,13 @@ Tento krok lokálně ověří stejnou minimální vrstvu commitovaných artefakt
 - validaci přítomnosti a základního obsahu verzovaných migrací a demo seed dat,
 - provozní dokument [GitHub CI](github-ci.md) se seznamem status checks a validací.
 
+### F0-06
+
+- repo-side konfiguraci Vercelu v `vercel.json`,
+- validaci Vercel konfigurace v `scripts/validate-vercel-config.mjs`,
+- diagnostiku preview a production prostredi v domovske strance aplikace,
+- provozni dokument [Vercel integrace](vercel-integrace.md) s mapovanim env promennych a rollback postupem.
+
 ## Omezení této etapy
 
-Tato etapa stále záměrně neřeší plně automatizované nasazování databázových změn ani orchestraci preview snapshotů. F0-05 zavádí jen kontrolní vrstvu v GitHub CI. Deployment workflow a napojení na Vercel patří do navazující backlogové položky F0-06.
+Tato etapa stale zamerne neresi plne automatizovane nasazovani databazovych zmen ani orchestraci preview snapshotu. F0-06 uz uzavira repo-side pripravu Vercel preview a production konfigurace, ale realny smoke scenar a zkusebni end-to-end delivery pruchod patri az do navazujicich polozek F0-07 a F0-08.
