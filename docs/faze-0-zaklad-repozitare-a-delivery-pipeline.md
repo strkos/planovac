@@ -564,9 +564,10 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 
 ### F0-05: GitHub CI
 
-- vytvořit workflow,
-- zavést minimální validace,
-- nastavit povinné status checks.
+- vytvořit workflow v `.github/workflows/ci.yml`,
+- zavést minimální validace `install`, `lint`, `build` a `validate-supabase`,
+- zkontrolovat `.env.example`, verzované migrace a demo seed data,
+- nastavit povinné status checks v GitHub branch protection pro `main`.
 
 ### F0-06: Vercel integrace
 

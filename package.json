@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "ci:validate": "npm run validate:env-example && npm run validate:supabase",
+    "validate:env-example": "node ./scripts/validate-env-example.mjs",
+    "validate:supabase": "node ./scripts/validate-supabase-artifacts.mjs"
   },
   "repository": {
     "type": "git",

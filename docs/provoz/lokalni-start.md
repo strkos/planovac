@@ -85,14 +85,25 @@ npm run build
 - `supabase/migrations/` - místo pro databázové migrace
 - `supabase/seed/` - místo pro seed nebo demo data
 - `docs/provoz/` - provozní dokumentace
+- `.github/workflows/` - GitHub CI workflow a navazující delivery automatizace
 
-## Co přidává F0-04
+## Co přidává F0-04 a F0-05
+
+### F0-04
 
 - první verzovaný databázový baseline pro Supabase,
 - demo seed data pro lokální a neprodukční ověření,
 - provozní pravidla pro preview schémata `preview_<identifikator>`,
 - popis stabilního mapování vybraných Uživatelů na neprodukční kontaktní údaje.
 
+### F0-05
+
+- GitHub Actions workflow v `.github/workflows/ci.yml`,
+- samostatné CI kontroly `install`, `lint`, `build` a `validate-supabase`,
+- validaci `.env.example` proti minimální konfiguraci prostředí,
+- validaci přítomnosti a základního obsahu verzovaných migrací a demo seed dat,
+- provozní dokument [GitHub CI](github-ci.md) se seznamem status checks a validací.
+
 ## Omezení této etapy
 
-Tato etapa stále záměrně neřeší plně automatizované nasazování databázových změn ani orchestrace preview snapshotů. GitHub CI a deployment workflow patří do navazujících backlogových položek F0-05 a F0-06.
+Tato etapa stále záměrně neřeší plně automatizované nasazování databázových změn ani orchestraci preview snapshotů. F0-05 zavádí jen kontrolní vrstvu v GitHub CI. Deployment workflow a napojení na Vercel patří do navazující backlogové položky F0-06.

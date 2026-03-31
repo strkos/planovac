@@ -117,6 +117,6 @@ Jakmile budou potvrzeni vlastníci prostředí, má se tento dokument doplnit o 
 F0-03 zavedlo základ konfigurace prostředí a F0-04 na něj navázalo databázovým baseline:
 
 - **F0-04** doplnilo první Supabase migrace, seed data, preview schema workflow a samostatný dokument [Supabase baseline a preview schema workflow](supabase-baseline-a-preview-schema.md),
-- **F0-05** doplní CI validace nekompletní konfigurace a databázových artefaktů,
+- **F0-05** doplnilo GitHub CI workflow a validace nekompletní konfigurace i databázových artefaktů,
 - **F0-06** doplní konkrétní mapování proměnných do Vercel preview a production prostředí,
 - **F1** doplní proměnné pro autentizaci Uživatele.
