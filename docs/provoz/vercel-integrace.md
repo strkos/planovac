@@ -199,5 +199,5 @@ Tento dokument zamerne neresi automatizovane rollbacky databaze. To patri do nav
 ## Vazba na dalsi etapy
 
 - **F0-07** navaze realnym smoke scenarem nad preview a production deploymentem,
-- **F0-08** overi zkusebni delivery pruchod pres PR a merge,
+- **F0-08** overi zkusebni delivery pruchod pres PR a merge a doplni samostatny runbook v `docs/provoz/zkusebni-delivery-pruchod.md`,
 - **F1** doplni autentizaci a navazujici secret management.

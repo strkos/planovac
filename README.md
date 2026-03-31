@@ -20,6 +20,7 @@ Současně repozitář obsahuje výstupy etap F0-04 až F0-06:
 - validační skripty pro `.env.example`, Supabase artefakty a Vercel konfiguraci v `scripts/`
 - základní `vercel.json` pro preview a production deployment
 - diagnostiku prostředí, URL a commitu na domovské stránce aplikace
+- runbook pro zkušební delivery průchod v `docs/provoz/zkusebni-delivery-pruchod.md`
 
 Lokální spuštění a ověření je popsané v dokumentu [Lokální start projektu](docs/provoz/lokalni-start.md).
 
@@ -46,4 +47,5 @@ npm run build
 - [GitHub CI](docs/provoz/github-ci.md)
 - [Konfigurace prostředí](docs/provoz/konfigurace-prostredi.md)
 - [Vercel integrace](docs/provoz/vercel-integrace.md)
+- [Zkušební delivery průchod](docs/provoz/zkusebni-delivery-pruchod.md)
 - [Supabase baseline a preview schema workflow](docs/provoz/supabase-baseline-a-preview-schema.md)

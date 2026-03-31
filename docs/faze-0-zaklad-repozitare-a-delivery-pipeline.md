@@ -590,6 +590,12 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 - ověřit merge do `main`,
 - potvrdit, že fáze 0 je skutečně připravená pro fázi 1.
 
+Pro tuto backlogovou položku má vzniknout i stručný provozní runbook, který oddělí:
+
+- co lze potvrdit už v preview verzi otevřeného pull requestu,
+- co je potřeba ověřit až po merge do `main`,
+- jaké důkazy mají zůstat dohledatelné v aplikaci nebo v delivery nástrojích.
+
 ## Checklist před spuštěním implementace
 
 Před prvním kódovým PR mají být potvrzené tyto body:
