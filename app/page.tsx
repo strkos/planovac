@@ -2,16 +2,16 @@ import { EnvironmentBadge } from "@/components/environment-badge";
 import { getEnvironmentConfig } from "@/lib/env";
 
 const nextSteps = [
-  "Navazat GitHub CI s kontrolou databazovych artefaktu v ramci F0-05.",
   "Propojit Vercel preview a production konfiguraci v ramci F0-06.",
   "Dopsat smoke overeni migraci, seedu a aplikace v ramci F0-07.",
+  "Overit prvni zkuseni delivery pruchod pres PR a merge v ramci F0-08.",
 ];
 
-const f004Outputs = [
-  ".env.example s doplnenym prefixem preview schema",
+const currentOutputs = [
+  ".github/workflows/ci.yml s joby install, lint, build a validate-supabase",
+  "npm skripty pro validaci .env.example a Supabase artefaktu",
   "prvni verzovana SQL migrace v supabase/migrations/",
   "demo seed dataset v supabase/seed/seed.sql",
-  "provozni dokument k preview schema workflow a anonymizaci",
 ];
 
 export default function HomePage() {
@@ -23,15 +23,16 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-header">
           <div>
-            <p className="eyebrow">planovac / F0-04</p>
-            <h1>Supabase baseline je pripraveny pro dalsi delivery faze.</h1>
+            <p className="eyebrow">planovac / F0-05</p>
+            <h1>GitHub CI hlida aplikaci, konfiguraci i databazove artefakty.</h1>
           </div>
           <EnvironmentBadge />
         </div>
         <p className="lead">
-          Tato stranka overuje, ze repozitar vedle minimalni Next.js aplikace
-          obsahuje i prvni verzovany Supabase baseline, demo seed data a
-          provozni pravidla pro preview schema workflow.
+          Tato stranka overuje, ze repozitar vedle minimalni Next.js aplikace a
+          prvniho Supabase baseline obsahuje i GitHub CI workflow pro pull
+          requesty, ktere kontroluje lint, build, zakladni konfiguraci a
+          databazove artefakty.
         </p>
         <div className="hero-meta" aria-label="Diagnostika prostredi">
           <p>
@@ -57,8 +58,8 @@ export default function HomePage() {
           <h2>Aplikace</h2>
           <p>
             App Router bezi z adresare <code>app/</code> a repozitar ma
-            pripraveny lint, build i strukturu pro navazujici databazove
-            iterace.
+            pripraveny lint, build, CI workflow a strukturu pro navazujici
+            databazove iterace.
           </p>
         </article>
 
@@ -87,6 +88,37 @@ export default function HomePage() {
               <dd>
                 Preview a production musi mit rozdilne URL i oddelene neverejne
                 konfigurace.
+              </dd>
+            </div>
+          </dl>
+        </article>
+
+        <article className="card">
+          <h2>GitHub CI</h2>
+          <p>
+            Pull requesty do <code>main</code> nove spousteji samostatne status
+            checks pro instalaci zavislosti, lint, build a validaci
+            databazovych artefaktu.
+          </p>
+          <dl className="env-properties">
+            <div className="env-property">
+              <dt>Workflow</dt>
+              <dd>
+                <code>.github/workflows/ci.yml</code>
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Status checks</dt>
+              <dd>
+                <code>install</code>, <code>lint</code>, <code>build</code>,{" "}
+                <code>validate-supabase</code>
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Repo validace</dt>
+              <dd>
+                <code>npm run ci:validate</code> overuje{" "}
+                <code>.env.example</code> i Supabase adresare.
               </dd>
             </div>
           </dl>
@@ -122,9 +154,9 @@ export default function HomePage() {
       </section>
 
       <section className="card next-steps">
-        <h2>F0-04 vystupy</h2>
+        <h2>Aktualni vystupy faze 0</h2>
         <ul>
-          {f004Outputs.map((item) => (
+          {currentOutputs.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
