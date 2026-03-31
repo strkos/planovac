@@ -13,6 +13,25 @@ Tento dokument popisuje minimální postup pro spuštění aplikační kostry ro
 npm install
 ```
 
+Pro cloud agenty je vhodné použít místo ručního `npm install` bootstrap skript v repozitáři:
+
+```bash
+./scripts/bootstrap-cloud-agent.sh
+```
+
+Skript:
+
+- očekává rootový `package-lock.json`,
+- používá `npm ci`, aby instalace odpovídala uzamčeným verzím,
+- je idempotentní a při nezměněném lockfilu zbytečně neinstaluje znovu,
+- připraví repozitář tak, aby po startu šlo rovnou spustit `npm run lint` a `npm run build`.
+
+Pro cloud agent environment je doporučený startup krok:
+
+```bash
+if [ -f package-lock.json ]; then ./scripts/bootstrap-cloud-agent.sh; fi
+```
+
 ## Konfigurace prostředí
 
 Před prvním spuštěním si zkopírujte vzorový soubor prostředí:

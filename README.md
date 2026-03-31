@@ -19,6 +19,8 @@ Současně repozitář nově obsahuje i první databázové artefakty pro F0-04:
 
 Lokální spuštění a ověření je popsané v dokumentu [Lokální start projektu](docs/provoz/lokalni-start.md).
 
+Pro cloud agenty je v repozitáři připravený idempotentní bootstrap skript `scripts/bootstrap-cloud-agent.sh`, který podle `package-lock.json` zajistí instalaci závislostí přes `npm ci` bez nutnosti ručního `npm install`.
+
 ### Rychlý start
 
 ```bash
@@ -35,5 +37,6 @@ npm run build
 - [Návrh implementačního plánu](docs/plan-implementace.md)
 - [Detailní implementační plán fáze 0](docs/faze-0-zaklad-repozitare-a-delivery-pipeline.md)
 - [Lokální start projektu](docs/provoz/lokalni-start.md)
+- [Cloud agent environment pro Node/npm](docs/provoz/cloud-agent-environment.md)
 - [Konfigurace prostředí](docs/provoz/konfigurace-prostredi.md)
 - [Supabase baseline a preview schema workflow](docs/provoz/supabase-baseline-a-preview-schema.md)
