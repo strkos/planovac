@@ -1,6 +1,6 @@
 # Lokální start projektu
 
-Tento dokument popisuje minimální postup pro spuštění aplikační kostry připravené v rámci backlogové položky **F0-02: Založení minimální aplikace**.
+Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace** a **F0-03: Konfigurace prostředí a secretů**.
 
 ## Předpoklady
 
@@ -12,6 +12,22 @@ Tento dokument popisuje minimální postup pro spuštění aplikační kostry p�
 ```bash
 npm install
 ```
+
+## Konfigurace prostředí
+
+Před prvním spuštěním si zkopírujte vzorový soubor prostředí:
+
+```bash
+cp .env.example .env.local
+```
+
+Pro lokální běh zůstává výchozí hodnota:
+
+```dotenv
+NEXT_PUBLIC_APP_ENV=local
+```
+
+Přehled všech proměnných, jejich významu a správy je popsaný v dokumentu [Konfigurace prostředí](konfigurace-prostredi.md).
 
 ## Run
 
@@ -47,4 +63,4 @@ npm run build
 
 ## Omezení této etapy
 
-Tato etapa záměrně řeší pouze minimální spustitelný základ. Konfigurace prostředí, `.env.example`, Supabase baseline a CI workflow patří do navazujících backlogových položek F0-03 až F0-05.
+Tato etapa záměrně řeší pouze minimální spustitelný základ a základní rozlišení prostředí. Supabase baseline a CI workflow patří do navazujících backlogových položek F0-04 a F0-05.

@@ -29,3 +29,4 @@ npm run build
 - [Návrh implementačního plánu](docs/plan-implementace.md)
 - [Detailní implementační plán fáze 0](docs/faze-0-zaklad-repozitare-a-delivery-pipeline.md)
 - [Lokální start projektu](docs/provoz/lokalni-start.md)
+- [Konfigurace prostředí](docs/provoz/konfigurace-prostredi.md)
