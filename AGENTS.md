@@ -99,3 +99,26 @@ Před dokončením změny ověř:
 - že preview režim zůstává jasně oddělený od produkčního režimu,
 - že si vysoká specifikace a use journeys neodporují,
 - že nové předpoklady jsou výslovně označené jako návrhy.
+
+## Cursor Cloud specific instructions
+
+### Service overview
+
+**planovac** is currently a minimal Next.js 16 + TypeScript scaffold (App Router). There is one runnable service — the Next.js dev server. No database connection, auth, or API routes are wired up yet; the Supabase SQL migrations/seeds exist as documentation artifacts for future phases.
+
+### Quick-start commands
+
+Standard commands are documented in the README and `docs/provoz/lokalni-start.md`:
+
+- `npm install` — install dependencies
+- `cp .env.example .env.local` — create local env config (only needed once; already done in VM snapshot)
+- `npm run dev` — start dev server on `http://localhost:3000`
+- `npm run lint` — ESLint
+- `npm run build` — production build
+
+### Non-obvious caveats
+
+- The project uses `package-lock.json` (npm). Do **not** use pnpm or yarn.
+- `.env.local` must exist before `npm run dev` or `npm run build` (copy from `.env.example`). The file is git-ignored, so it will not be present after a fresh clone — the update script handles this.
+- There are no automated tests yet (`tests/smoke/` contains only a placeholder README).
+- The `supabase/` directory has SQL files but no `config.toml` and no Supabase CLI integration — these are purely versioned migration artifacts.
