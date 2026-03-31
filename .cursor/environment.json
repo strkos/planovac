@@ -1,0 +1,3 @@
+{
+  "install": "if [ -f package-lock.json ]; then ./scripts/bootstrap-cloud-agent.sh; fi"
+}
