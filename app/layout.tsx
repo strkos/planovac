@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "planovac",
-  description: "Minimalni aplikacni kostra pro projekt planovac.",
+  description:
+    "Minimalni aplikacni kostra a prvni Supabase baseline pro projekt planovac.",
 };
 
 export default function RootLayout({

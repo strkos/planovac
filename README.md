@@ -1,6 +1,6 @@
 # planovac
 
-Repozitář aktuálně obsahuje produktovou a požadavkovou dokumentaci k aplikaci pro správu spolku a nově také minimální aplikační kostru pro implementaci fáze 0.
+Repozitář aktuálně obsahuje produktovou a požadavkovou dokumentaci k aplikaci pro správu spolku a také minimální aplikační kostru pro implementaci fáze 0 včetně prvního Supabase baseline.
 
 ## Minimální aplikace
 
@@ -10,6 +10,12 @@ V repozitáři je připravený základ aplikace v potvrzeném stacku:
 - TypeScript
 - App Router
 - ESLint
+
+Současně repozitář nově obsahuje i první databázové artefakty pro F0-04:
+
+- verzovanou migraci v `supabase/migrations/`
+- demo seed data v `supabase/seed/`
+- provozní popis preview schémat a anonymizovaných snapshotů
 
 Lokální spuštění a ověření je popsané v dokumentu [Lokální start projektu](docs/provoz/lokalni-start.md).
 
@@ -30,3 +36,4 @@ npm run build
 - [Detailní implementační plán fáze 0](docs/faze-0-zaklad-repozitare-a-delivery-pipeline.md)
 - [Lokální start projektu](docs/provoz/lokalni-start.md)
 - [Konfigurace prostředí](docs/provoz/konfigurace-prostredi.md)
+- [Supabase baseline a preview schema workflow](docs/provoz/supabase-baseline-a-preview-schema.md)
