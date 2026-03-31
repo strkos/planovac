@@ -88,11 +88,13 @@ preview_124
 
 ### Vytvoření
 - CREATE SCHEMA preview_X
-- kopie dat z public
+- anonymizovany snapshot produkcnich dat
 
 ### Vlastnosti
 - izolovaná data
 - snapshot
+- anonymizovane kontaktni udaje Uzivatelu
+- stabilni mapovani vybranych Uzivatelu na neprodukcni identity
 - žádný návrat dat
 
 ### Cleanup

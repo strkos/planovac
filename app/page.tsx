@@ -2,9 +2,16 @@ import { EnvironmentBadge } from "@/components/environment-badge";
 import { getEnvironmentConfig } from "@/lib/env";
 
 const nextSteps = [
-  "Pripravit Supabase baseline, migrace a seed data v ramci F0-04.",
-  "Navazat GitHub CI a Vercel deployment v ramci F0-05 a F0-06.",
-  "Dopsat smoke overeni a rollback postup v ramci F0-07.",
+  "Navazat GitHub CI s kontrolou databazovych artefaktu v ramci F0-05.",
+  "Propojit Vercel preview a production konfiguraci v ramci F0-06.",
+  "Dopsat smoke overeni migraci, seedu a aplikace v ramci F0-07.",
+];
+
+const f004Outputs = [
+  ".env.example s doplnenym prefixem preview schema",
+  "prvni verzovana SQL migrace v supabase/migrations/",
+  "demo seed dataset v supabase/seed/seed.sql",
+  "provozni dokument k preview schema workflow a anonymizaci",
 ];
 
 export default function HomePage() {
@@ -16,15 +23,15 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-header">
           <div>
-            <p className="eyebrow">planovac / F0-03</p>
-            <h1>Konfigurace prostredi je pripravena pro dalsi fazi.</h1>
+            <p className="eyebrow">planovac / F0-04</p>
+            <h1>Supabase baseline je pripraveny pro dalsi delivery faze.</h1>
           </div>
           <EnvironmentBadge />
         </div>
         <p className="lead">
-          Tato stranka overuje, ze repozitar obsahuje nasaditelny app shell v
-          Next.js App Router, vzorovy soubor <code>.env.example</code> a
-          zretelne rozliseni rezimu local, preview a production.
+          Tato stranka overuje, ze repozitar vedle minimalni Next.js aplikace
+          obsahuje i prvni verzovany Supabase baseline, demo seed data a
+          provozni pravidla pro preview schema workflow.
         </p>
         <div className="hero-meta" aria-label="Diagnostika prostredi">
           <p>
@@ -50,7 +57,8 @@ export default function HomePage() {
           <h2>Aplikace</h2>
           <p>
             App Router bezi z adresare <code>app/</code> a repozitar ma
-            pripraveny lint i build.
+            pripraveny lint, build i strukturu pro navazujici databazove
+            iterace.
           </p>
         </article>
 
@@ -77,7 +85,7 @@ export default function HomePage() {
             <div className="env-property">
               <dt>Pravidlo</dt>
               <dd>
-                Preview a production musi mit rozdilne URL i oddelene neveřejne
+                Preview a production musi mit rozdilne URL i oddelene neverejne
                 konfigurace.
               </dd>
             </div>
@@ -85,35 +93,40 @@ export default function HomePage() {
         </article>
 
         <article className="card">
-          <h2>Struktura repozitare</h2>
-          <ul>
-            <li>
-              <code>lib/</code> pro sdilene utility
-            </li>
-            <li>
-              <code>tests/smoke/</code> pro smoke overeni
-            </li>
-            <li>
-              <code>supabase/</code> pro migrace a seed data
-            </li>
-            <li>
-              <code>docs/provoz/</code> pro provozni dokumentaci
-            </li>
-          </ul>
+          <h2>Databazovy baseline</h2>
+          <p>
+            Supabase baseline pokryva prvni domenove entity, provozni metadata
+            preview schemat a demo data pro lokalni vyvoj.
+          </p>
+          <dl className="env-properties">
+            <div className="env-property">
+              <dt>Migrace</dt>
+              <dd>
+                <code>supabase/migrations/20260331120000_f0_04_supabase_baseline.sql</code>
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Seed</dt>
+              <dd>
+                <code>supabase/seed/seed.sql</code>
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Preview workflow</dt>
+              <dd>
+                <code>docs/provoz/supabase-baseline-a-preview-schema.md</code>
+              </dd>
+            </div>
+          </dl>
         </article>
       </section>
 
       <section className="card next-steps">
-        <h2>F0-03 vystupy</h2>
+        <h2>F0-04 vystupy</h2>
         <ul>
-          <li>
-            <code>.env.example</code> jako vychozi sablona pro lokalni setup
-          </li>
-          <li>
-            <code>docs/provoz/konfigurace-prostredi.md</code> jako matice
-            promennych a vlastnictvi secretu
-          </li>
-          <li>jednotna detekce prostredi v aplikaci i v UI</li>
+          {f004Outputs.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
       </section>
 

@@ -331,7 +331,7 @@ Pro feature request již existuje branch a implementace.
 ### Průběh
 1. Systém vytvoří preview nasazení aplikace.
 2. Zároveň vytvoří samostatné databázové schema pro tuto feature.
-3. Do tohoto schema zkopíruje aktuální produkční data jako snapshot.
+3. Do tohoto schema vytvoří anonymizovaný snapshot aktuálních produkčních dat.
 4. Preview verze aplikace používá pouze toto schema.
 5. Uživatelé testují novou funkci v odděleném prostředí.
 6. Ve všech obrazovkách preview verze je jasně uvedeno, že jde o testovací prostředí.
@@ -428,7 +428,7 @@ Snižuje se riziko nedorozumění a chybných očekávání.
 
 ---
 
-## 5.2 Preview verze pracuje s kopií produkčních dat
+## 5.2 Preview verze pracuje s anonymizovaným snapshotem produkčních dat
 ### Cíl
 Testování má probíhat nad realistickým stavem spolkové agendy.
 
@@ -437,10 +437,11 @@ V produkční verzi již existují členové, akce a přiřazení.
 
 ### Průběh
 1. Při vytvoření preview feature systém vytvoří nové databázové schema.
-2. Do něj zkopíruje produkční data ve stavu v okamžiku vzniku preview.
-3. Preview pak pracuje pouze s tímto snapshotem.
-4. Pozdější změny v produkci se do preview automaticky nepřenášejí.
-5. Změny v preview se nevracejí zpět do produkce.
+2. Do něj vytvoří anonymizovaný snapshot produkčních dat ve stavu v okamžiku vzniku preview.
+3. U vybraných Uživatelů použije stabilní mapování na neprodukční kontaktní údaje, aby byly testovací identity konzistentní napříč preview verzemi.
+4. Preview pak pracuje pouze s tímto snapshotem.
+5. Pozdější změny v produkci se do preview automaticky nepřenášejí.
+6. Změny v preview se nevracejí zpět do produkce.
 
 ### Očekávaný přínos
 Testování je věrné reálnému stavu, ale přitom oddělené a bezpečné.
