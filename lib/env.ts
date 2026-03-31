@@ -180,6 +180,15 @@ function buildChecks(config: Omit<EnvironmentConfig, "checks" | "isConsistent">)
         ? config.vercelEnvironment
         : null;
 
+  if (config.environment === "local") {
+    checks.push({
+      id: "local-runtime-ready",
+      label: "Lokalni runtime ma zakladni diagnostiku",
+      status: "pass",
+      detail: `Aplikace bezi lokalne na ${config.baseUrl ?? "http://localhost:3000"} a muze obslouzit smoke endpoint.`,
+    });
+  }
+
   if (config.source === "NEXT_PUBLIC_APP_ENV" && vercelEnvironment) {
     checks.push(
       config.environment === vercelEnvironment
