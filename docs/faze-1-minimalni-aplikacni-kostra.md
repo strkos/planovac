@@ -193,7 +193,7 @@ Pro první implementaci je potvrzený tento minimální auth model:
 #### Doporučené chování
 
 - při úspěchu: redirect do `/app`,
-- při neplatném, expirovaném nebo již použitelném magic linku: návrat do veřejné zóny s čitelnou hláškou,
+- při neplatném, expirovaném nebo již použitém magic linku: návrat do veřejné zóny s čitelnou hláškou,
 - při chybějící konfiguraci: explicitní chyba v aplikaci a v logu, ne tiché selhání,
 - při otevření chráněné routy bez session: redirect na `/`.
 
