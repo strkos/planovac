@@ -583,6 +583,13 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 0 minimálně
 - doplnit status nebo environment indikaci,
 - ověřit první end-to-end deploy.
 
+Výstupy této položky v repozitáři:
+
+- `app/api/health/route.ts` vrací strojově čitelnou diagnostiku prostředí a commitu,
+- `tests/smoke/run-smoke.mjs` ověřuje `GET /api/health` a hlavní stránku proti `SMOKE_BASE_URL`,
+- domovská stránka aplikace zobrazuje odkaz na health endpoint i postup smoke ověření,
+- provozní dokumentace popisuje lokální i post-deploy spuštění `npm run smoke`.
+
 ### F0-08: Zkušební delivery průchod
 
 - vytvořit malou nefunkční nebo minimální změnu,
@@ -619,7 +626,7 @@ Fázi 0 lze považovat za dokončenou teprve tehdy, když platí vše níže:
 - [ ] preview deployment vzniká automaticky,
 - [ ] merge do `main` spouští produkční deployment,
 - [ ] preview a production jsou zřetelně oddělené,
-- [ ] existuje základní smoke ověření po deployi,
+- [x] existuje základní smoke ověření po deployi,
 - [ ] existuje dokumentovaný rollback postup pro aplikaci i databázové změny,
 - [ ] je možné dohledat, jaký commit běží v preview a produkci.
 

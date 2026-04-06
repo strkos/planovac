@@ -1,6 +1,6 @@
 # planovac
 
-Repozitář aktuálně obsahuje produktovou a požadavkovou dokumentaci k aplikaci pro správu spolku a také minimální aplikační kostru pro implementaci fáze 0 včetně prvního Supabase baseline, GitHub CI validací a repo-side Vercel integrace.
+Repozitář aktuálně obsahuje produktovou a požadavkovou dokumentaci k aplikaci pro správu spolku a také minimální aplikační kostru pro implementaci fáze 0 včetně prvního Supabase baseline, GitHub CI validací, repo-side Vercel integrace a základního smoke scénáře nad nasazenou aplikací.
 
 ## Minimální aplikace
 
@@ -11,7 +11,7 @@ V repozitáři je připravený základ aplikace v potvrzeném stacku:
 - App Router
 - ESLint
 
-Současně repozitář obsahuje výstupy etap F0-04 až F0-06:
+Současně repozitář obsahuje výstupy etap F0-04 až F0-07:
 
 - verzovanou migraci v `supabase/migrations/`
 - demo seed data v `supabase/seed/`
@@ -20,6 +20,8 @@ Současně repozitář obsahuje výstupy etap F0-04 až F0-06:
 - validační skripty pro `.env.example`, Supabase artefakty a Vercel konfiguraci v `scripts/`
 - základní `vercel.json` pro preview a production deployment
 - diagnostiku prostředí, URL a commitu na domovské stránce aplikace
+- health endpoint `app/api/health/route.ts` pro strojově čitelnou runtime diagnostiku
+- smoke runner `npm run smoke` nad `SMOKE_BASE_URL`
 
 Lokální spuštění a ověření je popsané v dokumentu [Lokální start projektu](docs/provoz/lokalni-start.md).
 
@@ -32,6 +34,7 @@ npm install
 npm run dev
 npm run lint
 npm run ci:validate
+npm run smoke
 npm run build
 ```
 

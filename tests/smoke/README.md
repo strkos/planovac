@@ -1,17 +1,40 @@
 # Smoke overeni
 
-Tato slozka je rezervovana pro jednoducha smoke overeni ve fazi 0 a navazujicich iteracich.
+Tato slozka obsahuje minimalni smoke scenar pro backlogovou polozku **F0-07: Smoke test a diagnostika**.
 
-Aktualne baseline repozitare overuje:
+## Co smoke scenar kontroluje
 
-- lokalni start aplikace,
-- pruchod `npm run lint`,
-- pruchod `npm run build`,
-- pruchod `npm run ci:validate`,
-- pritomnost verzovanych Supabase migraci,
-- pritomnost demo seed dat pro neprodukcni overeni.
+Skript `run-smoke.mjs` overuje proti URL z `SMOKE_BASE_URL`:
 
-Navazujici iterace F0-05 az F0-07 maji doplnit:
+- dostupnost domovske stranky `/`,
+- dostupnost strojove citelneho endpointu `/api/health`,
+- pritomnost markeru F0-07 v HTML homepage,
+- JSON payload s identifikaci aplikace `planovac`,
+- hodnotu `phase=F0-07`,
+- platnou identifikaci prostredi `local`, `preview` nebo `production`,
+- seznam environment kontrol vracenych z runtime diagnostiky.
 
-- prvni realny smoke scenar nad preview deploymentem,
-- diagnostiku vazby mezi buildem, prostredim a preview schematem.
+## Jak smoke scenar spustit
+
+Lokalne po startu vyvojoveho serveru:
+
+```bash
+SMOKE_BASE_URL=http://localhost:3000 npm run smoke
+```
+
+Nad preview nebo production deploymentem:
+
+```bash
+SMOKE_BASE_URL=https://<nasazena-url> npm run smoke
+```
+
+## Co smoke scenar zamerne neresi
+
+F0-07 zatim nekontroluje:
+
+- prihlaseni Uzivatele,
+- databazove migrace aplikovane proti zive instanci,
+- integraci na Supabase API,
+- automaticke spousteni po kazdem deployi.
+
+Tyto oblasti budou navazovat az v dalsich iteracich, az bude existovat realna datova vrstva a plnejsi delivery workflow.

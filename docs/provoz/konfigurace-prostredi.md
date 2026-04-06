@@ -30,7 +30,7 @@ Toto pravidlo je důležité proto, aby:
 | Proměnná | Typ | Viditelnost | Povinná od | Použití | Správa |
 | --- | --- | --- | --- | --- | --- |
 | `NEXT_PUBLIC_APP_ENV` | `local \| preview \| production` | veřejná | F0-03 | Explicitní identifikace prostředí v UI i aplikační logice. | lokální `.env.local`, Vercel env vars |
-| `NEXT_PUBLIC_APP_BASE_URL` | URL | veřejná | F0-03 | Kanonická URL běžící aplikace pro odkazy, diagnostiku a budoucí smoke ověření. | lokální `.env.local`, Vercel env vars |
+| `NEXT_PUBLIC_APP_BASE_URL` | URL | veřejná | F0-03 | Kanonická URL běžící aplikace pro odkazy, diagnostiku a smoke ověření. | lokální `.env.local`, Vercel env vars |
 | `VERCEL_TARGET_ENV` | `development \| preview \| production \| <custom>` | platformní | F0-06 | Přesnější fallback detekce cílového prostředí při běhu na Vercelu. | nastavuje Vercel |
 | `VERCEL_ENV` | `development \| preview \| production` | platformní | F0-03 | Fallback detekce prostředí při běhu na Vercelu. | nastavuje Vercel |
 | `VERCEL_URL` | hostname | platformní | F0-03 | Diagnostická informace o aktuálním deployment hostu. | nastavuje Vercel |
@@ -43,6 +43,7 @@ Toto pravidlo je důležité proto, aby:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | token | veřejná | F0-04 | Veřejný anon klíč pro klientské napojení na Supabase. | lokální `.env.local`, Vercel env vars |
 | `SUPABASE_SERVICE_ROLE_KEY` | token | neveřejná | F0-04 | Serverové operace, migrace, seed a práce s preview snapshoty. Nikdy nesmí být vystavena klientovi. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 | `SUPABASE_PREVIEW_SCHEMA_PREFIX` | string | neveřejná | F0-04 | Prefix pro naming preview schémat, očekávaně `preview_`. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
+| `SMOKE_BASE_URL` | URL | neveřejná | F0-07 | Cílová URL pro `npm run smoke`; typicky `http://localhost:3000`, preview host nebo produkční doména. | lokální `.env.local`, GitHub secrets, Vercel env vars |
 | `OIDC_ISSUER_URL` | URL | neveřejná | F1 | Konfigurace OIDC/OAuth poskytovatele, výchozí Supabase Auth. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 | `OIDC_CLIENT_ID` | string | neveřejná | F1 | Identifikátor klienta pro přihlášení Uživatele. | lokální neveřejný `.env.local`, Vercel env vars |
 | `OIDC_CLIENT_SECRET` | secret | neveřejná | F1 | Tajný klíč pro serverovou část přihlašovacího toku. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
@@ -90,6 +91,7 @@ Lokální prostředí je výchozí pro vývoj a má být snadno opakovatelné be
 
 - `NEXT_PUBLIC_APP_ENV=preview`
 - `NEXT_PUBLIC_APP_BASE_URL=https://<preview-host>`
+- `SMOKE_BASE_URL=https://<preview-host>`
 
 Preview musí být jasně oddělené od produkce v UI i konfiguraci. Pro databázi má v navazující fázi používat sdílený neprodukční Supabase projekt a schéma `preview_<identifikator>`. Ve F0-06 se navíc doporučuje zapnout ve Vercelu **Automatically expose System Environment Variables**, aby aplikace mohla zobrazovat branch URL, produkční URL a commit přímo v diagnostice.
 
@@ -97,6 +99,7 @@ Preview musí být jasně oddělené od produkce v UI i konfiguraci. Pro databá
 
 - `NEXT_PUBLIC_APP_ENV=production`
 - `NEXT_PUBLIC_APP_BASE_URL=https://<produkční-doména>`
+- `SMOKE_BASE_URL=https://<produkční-doména>`
 
 Produkční prostředí nesmí používat preview data ani preview secrety.
 
@@ -123,4 +126,5 @@ F0-03 zavedlo základ konfigurace prostředí a F0-04 na něj navázalo databáz
 - **F0-04** doplnilo první Supabase migrace, seed data, preview schema workflow a samostatný dokument [Supabase baseline a preview schema workflow](supabase-baseline-a-preview-schema.md),
 - **F0-05** doplnilo GitHub CI workflow a validace nekompletní konfigurace i databázových artefaktů,
 - **F0-06** doplnilo konkrétní mapování proměnných do Vercel preview a production prostředí a runbook [Vercel integrace](vercel-integrace.md),
+- **F0-07** doplnilo `SMOKE_BASE_URL`, runtime endpoint `/api/health` a skript `npm run smoke` pro základní ověření nasazené aplikace,
 - **F1** doplní proměnné pro autentizaci Uživatele.
