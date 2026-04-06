@@ -16,6 +16,7 @@ const requiredKeys = [
   "SUPABASE_SERVICE_ROLE_KEY",
   "SUPABASE_PREVIEW_SCHEMA_PREFIX",
   "SMOKE_BASE_URL",
+  "SUPABASE_AUTH_REDIRECT_PATH",
 ];
 
 function parseEnvKeys(contents) {

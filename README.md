@@ -47,6 +47,7 @@ npm run build
 - [Detailní implementační plán fáze 0](docs/faze-0-zaklad-repozitare-a-delivery-pipeline.md)
 - [Detailní implementační plán fáze 1](docs/faze-1-minimalni-aplikacni-kostra.md)
 - [Lokální start projektu](docs/provoz/lokalni-start.md)
+- [Auth vstupy a rozhodnutí pro F1-01](docs/provoz/f1-01-auth-vstupy-a-rozhodnuti.md)
 - [Cloud agent environment pro Node/npm](docs/provoz/cloud-agent-environment.md)
 - [GitHub CI](docs/provoz/github-ci.md)
 - [Konfigurace prostředí](docs/provoz/konfigurace-prostredi.md)

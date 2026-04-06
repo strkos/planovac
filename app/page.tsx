@@ -1,247 +1,171 @@
 import { EnvironmentBadge } from "@/components/environment-badge";
+import { getAuthConfig } from "@/lib/auth-config";
 import { getEnvironmentConfig } from "@/lib/env";
 
-const nextSteps = [
-  "Dopsat smoke overeni migraci, seedu a aplikace v ramci F0-07.",
-  "Po merge do main potvrdit, ze stejny commit a diagnostika dosly i do production v ramci F0-08.",
-  "Spustit npm run smoke proti preview deploymentu po otevreni pull requestu.",
-  "Overit prvni zkuseni delivery pruchod pres PR a merge v ramci F0-08.",
+const confirmedDecisions = [
+  "Auth vrstva zustava v Supabase Auth bez externiho poskytovatele identity.",
+  "Prvni prihlaseni pouziva email + magic link.",
+  "Po uspesnem callbacku ma Uzivatel smerovat do chranene casti na /app.",
+  "Prvni ucty se zakladaji rizene v Supabase Auth; samoobsluzna registrace se zatim nepovoluje.",
+  "Role admin a clen se budou cist server-side z minimalni access tabulky v Supabase.",
 ];
 
-const currentOutputs = [
-  ".github/workflows/ci.yml s joby install, lint, build a validate-supabase",
-  "npm skripty pro validaci .env.example a Supabase artefaktu",
-  "npm run smoke pro kontrolu homepage a /api/health nad SMOKE_BASE_URL",
-  "prvni verzovana SQL migrace v supabase/migrations/",
-  "demo seed dataset v supabase/seed/seed.sql",
-  "repo-side Vercel konfigurace ve vercel.json a runbook pro preview/production",
-  "zkusebni F0-08 evidence panel pro PR preview a navazujici merge do main",
-  "runtime endpoint /api/health s JSON diagnostikou prostredi, URL a commitu",
+const configurationOwners = [
+  "Lokalni .env.local spravuje vyvojar nebo agent v danem prostredi.",
+  "Preview a production verejne hodnoty spravuje Vercel environment konfigurace.",
+  "Redirect allowlist, email login a magic link sablony spravuje spravce daneho Supabase projektu.",
+  "Soukromy seznam testovacich identit a mailbox pristupu zustava mimo git.",
 ];
+
+const identityBootstrapSteps = [
+  "Pro kazde prostredi pripravit jednu ucelovou identitu admin a jednu identitu clen.",
+  "V access tabulce vest normalizovany email, roli admin nebo clen a priznak aktivniho pristupu.",
+  "Pristup k mailboxum nebo magic linkum neukladat do repozitare.",
+  "Pro unauthorized scenar pouzit autentizovanou identitu bez aktivniho zaznamu v access tabulce.",
+];
+
+const nextSteps = [
+  "F1-02 muze navazat verejnym login/logout tokem a callback routou.",
+  "F1-03 muze pouzit odvozene callback URL a guardy pro /app.",
+  "F1-04 muze implementovat server-side lookup role admin a clen bez zmeny auth smeru.",
+];
+
+const documentationArtifacts = [
+  "docs/provoz/f1-01-auth-vstupy-a-rozhodnuti.md",
+  "docs/provoz/konfigurace-prostredi.md",
+  "docs/provoz/lokalni-start.md",
+  "docs/faze-1-minimalni-aplikacni-kostra.md",
+];
+
+const redirectLabels = {
+  local: "local",
+  preview: "preview",
+  production: "production",
+} as const;
 
 export default function HomePage() {
   const environment = getEnvironmentConfig();
+  const auth = getAuthConfig();
   const shortCommitSha = environment.commitSha?.slice(0, 7) ?? null;
-  const deliveryRunChecks = [
-    {
-      label: "Zmena je zamerne minimalni",
-      status: "pass" as const,
-      detail:
-        "Domovska stranka a provozni dokumentace rozsiruji dohledatelnost delivery bez zasahu do domenoveho chovani aplikace.",
-    },
-    {
-      label: "Pull request ma citelne preview dukazy",
-      status:
-        environment.environment === "preview" || environment.environment === "production"
-          ? ("pass" as const)
-          : ("warning" as const),
-      detail:
-        environment.environment === "preview"
-          ? `Preview bezi pro vetev ${environment.gitCommitRef ?? "neznamou"} a ukazuje commit ${shortCommitSha ?? "neni k dispozici"}.`
-          : environment.environment === "production"
-            ? `Tento commit uz dosel i mimo preview; dohledatelnost zustava zachovana pres commit ${shortCommitSha ?? "neni k dispozici"}.`
-            : "Po otevreni PR zkontrolujte status checks, preview URL, branch ref a commit SHA na teto strance.",
-    },
-    {
-      label: "Merge do main musi potvrdit production deployment",
-      status:
-        environment.environment === "production" ? ("pass" as const) : ("warning" as const),
-      detail:
-        environment.environment === "production"
-          ? `Production runtime potvrzuje release na commitu ${shortCommitSha ?? "neni k dispozici"} a ma mit stejnou dohledatelnost jako preview.`
-          : "Po merge do main overte, ze se stejny commit objevil v production a badge se prepne na production.",
-    },
-  ];
+  const healthUrl = `${environment.baseUrl ?? "http://localhost:3000"}/api/health`;
+  const redirectTargets = Object.entries(auth.recommendedRedirects).map(([key, value]) => ({
+    key,
+    label: redirectLabels[key as keyof typeof redirectLabels],
+    value,
+  }));
 
   return (
-    <main className="page">
+    <main className="shell">
       <section className="hero">
         <div className="hero-header">
           <div>
-            <p className="eyebrow">planovac / F0-08</p>
-            <h1>Zkusebni delivery pruchod ma jasne dukazy pro PR preview i merge do main.</h1>
+            <p className="eyebrow">planovac / F1-01</p>
+            <h1>Auth vstupy a rozhodnuti pro fazi 1 jsou zapsane, validovane a dohledatelne.</h1>
             <p className="eyebrow">planovac / F0-07</p>
-            <h1>Smoke scenar a diagnostika maji byt dohledatelne z aplikace i runtime endpointu.</h1>
           </div>
           <EnvironmentBadge />
         </div>
         <p className="lead">
-          Tato stranka overuje, ze minimalni Next.js aplikace vedle GitHub CI a
-          Supabase baseline obsahuje i pouzitelny smoke scenar nad preview a
-          production deploymenty, vcetne diagnostiky prostredi, URL, commitu a
-          zdravotniho endpointu pro strojove overeni.
+          F1-01 uzavira auth smer pro dalsi implementaci: Supabase Auth, email +
+          magic link, jasne redirect URL, rizeny bootstrap prvnich identit a
+          server-side zdroj role.{" "}
+          {"Smoke scenar a diagnostika maji byt dohledatelne z aplikace i runtime endpointu."}
         </p>
-        <div className="hero-meta" aria-label="Diagnostika prostredi">
+        <div className="hero-meta" aria-label="Diagnostika auth vstupu">
           <p>
-            Zdroj detekce: <code>{environment.source}</code> ={" "}
+            Zdroj detekce prostredi: <code>{environment.source}</code> ={" "}
             <code>{environment.sourceValue}</code>
           </p>
           <p>
-            Zakladni URL:{" "}
-            <code>{environment.baseUrl ?? "neni nastavena"}</code>
+            Zakladni URL aplikace: <code>{environment.baseUrl ?? "neni nastavena"}</code>
           </p>
           <p>
-            Deployment URL:{" "}
-            <code>{environment.deploymentUrl ?? "neni k dispozici"}</code>
+            Redirect path: <code>{auth.redirectPath ?? "neni nastavena"}</code>
           </p>
           <p>
-            Branch deployment URL:{" "}
-            <code>{environment.branchUrl ?? "neni k dispozici"}</code>
+            Aktualni callback URL: <code>{auth.callbackUrl ?? "nejde odvodit"}</code>
           </p>
           <p>
-            Produkcni URL projektu:{" "}
-            <code>{environment.productionUrl ?? "neni k dispozici"}</code>
-          </p>
-          <p>
-            Git ref: <code>{environment.gitCommitRef ?? "neni k dispozici"}</code>
+            Zdroj role: <code>{auth.roleSource}</code>
           </p>
           <p>
             Commit: <code>{shortCommitSha ?? "neni k dispozici"}</code>
           </p>
         </div>
-        <div className="status-pill-row" aria-label="Souhrn stavu integrace">
-          <span
-            className="status-pill"
-            data-variant={environment.isConsistent ? "success" : "warning"}
-          >
-            {environment.isConsistent
-              ? "Mapovani preview a production pusobi konzistentne."
-              : "Diagnostika nasla riziko v mapovani preview nebo production."}
+        <div className="status-pill-row" aria-label="Souhrn auth pripravenosti">
+          <span className="status-pill" data-variant={auth.status === "pass" ? "success" : "warning"}>
+            {auth.isReady
+              ? "Auth vstupy jsou pro dalsi implementaci runtime pripraveny."
+              : "Auth smer je potvrzeny, ale runtime stale ceka na skutecne konfiguracni hodnoty."}
           </span>
           <span className="status-pill" data-variant="info">
-            Zdroj base URL: <code>{environment.baseUrlSource}</code>
+            Provider: <code>{auth.provider}</code>
           </span>
           <span className="status-pill" data-variant="info">
-            Smoke base URL: <code>{process.env.SMOKE_BASE_URL ?? "neni nastavena"}</code>
+            Prihlaseni: <code>{auth.signInMethod}</code>
+          </span>
+          <span className="status-pill" data-variant="info">
+            Ucty: <code>{auth.accountProvisioning}</code>
           </span>
         </div>
       </section>
 
-      <section className="status-grid" aria-label="Stav repozitare">
+      <section className="status-grid" aria-label="Potvrzena rozhodnuti F1-01">
         <article className="card">
-          <h2>Aplikace</h2>
-          <p>
-            App Router bezi z adresare <code>app/</code> a repozitar ma
-            pripraveny lint, build, CI workflow, Vercel konfiguraci, health
-            endpoint a smoke runner pro navazujici preview overeni.
-          </p>
+          <h2>Potvrzena auth rozhodnuti</h2>
+          <ul>
+            {confirmedDecisions.map((decision) => (
+              <li key={decision}>{decision}</li>
+            ))}
+          </ul>
         </article>
 
         <article className="card">
-          <h2>Prostredi</h2>
-          <p>
-            {environment.description}
-          </p>
+          <h2>Redirect URL pro local, preview a production</h2>
           <dl className="env-properties">
+            {redirectTargets.map((target) => (
+              <div key={target.key} className="env-property">
+                <dt>{target.label}</dt>
+                <dd>
+                  <code>{target.value}</code>
+                </dd>
+              </div>
+            ))}
             <div className="env-property">
-              <dt>Explicitni rezim</dt>
+              <dt>Neuspesny navrat</dt>
               <dd>
-                <code>NEXT_PUBLIC_APP_ENV</code> ma prednost pred fallbackem z
-                platformy.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Fallback</dt>
-              <dd>
-                Pokud chybi explicitni hodnota, aplikace pouzije{" "}
-                <code>VERCEL_TARGET_ENV</code>, potom <code>VERCEL_ENV</code> a
-                az nakonec <code>NODE_ENV</code>.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Pravidlo</dt>
-              <dd>
-                Preview a production musi mit rozdilne URL i oddelene neverejne
-                konfigurace.
+                Po neplatnem nebo expirovanem magic linku se Uzivatel vraci do
+                verejne zony na <code>{auth.failureReturnUrl}</code>.
               </dd>
             </div>
           </dl>
         </article>
 
         <article className="card">
-          <h2>Vercel integrace</h2>
-          <p>
-            Pull requesty maji vznikat jako preview deployment a merge do{" "}
-            <code>main</code> ma vest na production deployment se samostatnou
-            konfiguraci i URL.
-          </p>
-          <dl className="env-properties">
-            <div className="env-property">
-              <dt>Repo konfigurace</dt>
-              <dd>
-                <code>vercel.json</code> nastavuje Next.js preset a prikazuje
-                instalaci pres <code>npm ci</code>.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Mapovani vetvi</dt>
-              <dd>
-                Produkcni branch zustava <code>main</code>; ostatni vetve a pull
-                requesty maji smerovat do preview.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Promenne</dt>
-              <dd>
-                Preview a production pouzivaji odlisne hodnoty{" "}
-                <code>NEXT_PUBLIC_APP_ENV</code> a{" "}
-                <code>NEXT_PUBLIC_APP_BASE_URL</code>.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Diagnostika</dt>
-              <dd>
-                Nasazena aplikace zobrazuje ref, deployment URL, produkcni URL a
-                commit SHA pro dohledatelnost release.
-              </dd>
-            </div>
-          </dl>
+          <h2>Vlastnictvi konfigurace</h2>
+          <ul>
+            {configurationOwners.map((owner) => (
+              <li key={owner}>{owner}</li>
+            ))}
+          </ul>
         </article>
 
         <article className="card">
-          <h2>GitHub CI a databaze</h2>
-          <p>
-            GitHub CI dal hlida build a repozitarove artefakty, zatimco
-            Supabase baseline pripravuje migrace, preview metadata a demo data
-            pro navazujici preview workflow. Smoke overeni se pousti explicitne
-            nad nasazenou URL, aby slo stejne pouzit lokalne i po deployi.
-          </p>
-          <dl className="env-properties">
-            <div className="env-property">
-              <dt>CI workflow</dt>
-              <dd>
-                <code>.github/workflows/ci.yml</code>
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Status checks</dt>
-              <dd>
-                <code>install</code>, <code>lint</code>, <code>build</code>,{" "}
-                <code>validate-supabase</code>
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Preview schema workflow</dt>
-              <dd>
-                <code>docs/provoz/supabase-baseline-a-preview-schema.md</code>
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Baseline migrace</dt>
-              <dd>
-                <code>supabase/migrations/20260331120000_f0_04_supabase_baseline.sql</code>
-              </dd>
-            </div>
-          </dl>
+          <h2>Bootstrap testovacich identit</h2>
+          <ol>
+            {identityBootstrapSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
         </article>
       </section>
 
-      <section className="status-grid" aria-label="Kontroly integrace">
+      <section className="status-grid" aria-label="Runtime diagnostika F1-01">
         <article className="card">
-          <h2>Kontrola Vercel mapovani</h2>
+          <h2>Runtime pripravenost auth vstupu</h2>
           <ul className="status-list">
-            {environment.checks.map((check) => (
-              <li key={check.label} className="status-item" data-status={check.status}>
+            {auth.checks.map((check) => (
+              <li key={check.id} className="status-item" data-status={check.status}>
                 <span className="status-dot" aria-hidden="true" />
                 <div>
                   <strong>{check.label}</strong>
@@ -255,88 +179,41 @@ export default function HomePage() {
         <article className="card">
           <h2>Zdravotni endpoint</h2>
           <p>
-            Endpoint <code>/api/health</code> vraci JSON se stavem runtime
-            diagnostiky. Smoke script z nej cte prostredi, commit a vysledky
-            jednotlivych kontrol bez parsovani HTML.
+            Endpoint <code>/api/health</code> dale vraci runtime diagnostiku
+            prostredi a nove i sekci <code>auth</code>, aby reviewer videl stejne
+            auth vstupy v HTML i ve strojove citelnem JSON payloadu.
           </p>
           <dl className="env-properties">
             <div className="env-property">
               <dt>URL</dt>
               <dd>
-                <code>{`${environment.baseUrl ?? "http://localhost:3000"}/api/health`}</code>
+                <code>{healthUrl}</code>
               </dd>
             </div>
             <div className="env-property">
               <dt>HTTP status</dt>
               <dd>
-                <code>200</code> pri konzistentnim mapovani, jinak <code>503</code>.
+                <code>200</code> pri konzistentnim mapovani prostredi, jinak{" "}
+                <code>503</code>.
               </dd>
             </div>
             <div className="env-property">
               <dt>Payload</dt>
               <dd>
                 Obsahuje <code>environment</code>, <code>baseUrl</code>,{" "}
-                <code>commitSha</code> a pole <code>checks</code>.
+                <code>commitSha</code>, <code>checks</code> a nove i objekt{" "}
+                <code>auth</code> s redirectem, callback URL a auth kontrolami.
               </dd>
             </div>
           </dl>
         </article>
 
         <article className="card">
-          <h2>Mapovani promennych do Vercelu</h2>
-          <dl className="env-properties">
-            <div className="env-property">
-              <dt>Preview</dt>
-              <dd>
-                <code>NEXT_PUBLIC_APP_ENV=preview</code> a{" "}
-                <code>NEXT_PUBLIC_APP_BASE_URL</code> ma smerovat na preview
-                host.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Production</dt>
-              <dd>
-                <code>NEXT_PUBLIC_APP_ENV=production</code> a{" "}
-                <code>NEXT_PUBLIC_APP_BASE_URL</code> ma smerovat na produkcni
-                domenu.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>System env vars</dt>
-              <dd>
-                Ve Vercelu ma zustat zapnute automaticke vystaveni systemovych
-                promennych pro diagnostiku v Next.js runtime.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Smoke URL</dt>
-              <dd>
-                <code>SMOKE_BASE_URL</code> ma pro dane prostredi mirit na URL,
-                proti ktere se spousti <code>npm run smoke</code>.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Oddeleni dat</dt>
-              <dd>
-                Neverejne Supabase klice a preview schema prefix musi byt pro
-                preview a production spravovane oddelene.
-              </dd>
-            </div>
-          </dl>
-        </article>
-      </section>
-
-      <section className="status-grid" aria-label="Zkusebni delivery pruchod">
-        <article className="card">
-          <h2>F0-08: Zkusebni delivery pruchod</h2>
-          <p>
-            Tato iterace zamerne nepridava novou domenovou funkcionalitu. Misto
-            toho vytvari citelny dukaz, ze mala zmena umi projit pres pull
-            request, preview deployment a navazujici merge do <code>main</code>.
-          </p>
+          <h2>Diagnostika prostredi z faze 0</h2>
+          <p>{environment.description}</p>
           <ul className="status-list">
-            {deliveryRunChecks.map((check) => (
-              <li key={check.label} className="status-item" data-status={check.status}>
+            {environment.checks.map((check) => (
+              <li key={check.id} className="status-item" data-status={check.status}>
                 <span className="status-dot" aria-hidden="true" />
                 <div>
                   <strong>{check.label}</strong>
@@ -346,78 +223,26 @@ export default function HomePage() {
             ))}
           </ul>
         </article>
-
-        <article className="card">
-          <h2>Co ma reviewer overit</h2>
-          <dl className="env-properties">
-            <div className="env-property">
-              <dt>V pull requestu</dt>
-              <dd>
-                Uspesne status checks <code>install</code>, <code>lint</code>,{" "}
-                <code>build</code> a <code>validate-supabase</code>.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>V preview verzi</dt>
-              <dd>
-                Preview URL, zdrojovou vetev, commit SHA a odliseni preview od
-                production.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Po merge do main</dt>
-              <dd>
-                Stejny commit v production, badge <code>production</code> a
-                dohledatelnou produkcni URL.
-              </dd>
-            </div>
-            <div className="env-property">
-              <dt>Runbook</dt>
-              <dd>
-                <code>docs/provoz/zkusebni-delivery-pruchod.md</code>
-              </dd>
-            </div>
-          </dl>
-        </article>
       </section>
 
-      <section className="card next-steps">
-        <h2>Smoke scenar F0-07</h2>
-        <ol>
-          <li>
-            Po deployi nastavte <code>SMOKE_BASE_URL</code> na preview nebo
-            produkcni URL.
-          </li>
-          <li>
-            Spustte <code>npm run smoke</code>.
-          </li>
-          <li>
-            Ocekavejte uspesnou odpoved z <code>/api/health</code> a pritomnost
-            klicovych markeru na homepage.
-          </li>
-          <li>
-            Pokud smoke selze, zkontrolujte badge prostredi, runtime URL a pole{" "}
-            <code>checks</code> v health payloadu.
-          </li>
-        </ol>
-      </section>
-
-      <section className="card next-steps">
-        <h2>Aktualni vystupy faze 0</h2>
-        <ul>
-          {currentOutputs.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="card next-steps">
-        <h2>Dalsi kroky</h2>
+      <section className="card">
+        <h2>Co F1-01 odblokovava</h2>
         <ol>
           {nextSteps.map((step) => (
             <li key={step}>{step}</li>
           ))}
         </ol>
+      </section>
+
+      <section className="card">
+        <h2>Dokumentacni artefakty</h2>
+        <ul>
+          {documentationArtifacts.map((artifact) => (
+            <li key={artifact}>
+              <code>{artifact}</code>
+            </li>
+          ))}
+        </ul>
       </section>
     </main>
   );
