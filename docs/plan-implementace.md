@@ -17,7 +17,7 @@ Plán vychází z již potvrzených voleb v repozitáři:
 
 - frontend bude hostovaný na **Vercel.com**,
 - data budou uložená v **Supabase.com**,
-- autentizace bude přes **OIDC/OAuth** s výchozím poskytovatelem **Supabase**,
+- autentizace bude přes **Supabase Auth**,
 - zdrojový kód a automatizace poběží přes **GitHub**.
 
 Současně respektuje produktové zadání:
@@ -111,7 +111,8 @@ Podrobný prováděcí plán této etapy je rozepsaný v dokumentu
 
 ### Obsah
 
-- přihlášení Uživatele přes zvolený OIDC/OAuth tok,
+- přihlášení Uživatele přes Supabase Auth,
+- v první implementaci pomocí emailu a magic linku,
 - základní aplikační layout,
 - navigace pro hlavní sekce,
 - prázdné nebo jednoduché obrazovky pro budoucí moduly,

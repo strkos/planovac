@@ -24,7 +24,7 @@ Při implementaci musí zůstat zachované zejména tyto principy:
 
 - frontend je hostovaný na **Vercel.com**,
 - data jsou uložená v **Supabase.com**,
-- autentizace používá **OIDC/OAuth** s výchozím poskytovatelem **Supabase**,
+- autentizace používá **Supabase Auth** jako výchozí identitní vrstvu,
 - vývoj a automatizace probíhají přes **GitHub**,
 - preview data jsou oddělená od produkce a pracují v režimu **schema-per-feature**,
 - preview data se nikdy nevracejí zpět do produkčních dat.

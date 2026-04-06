@@ -25,7 +25,7 @@ Při implementaci musí zůstat zachované zejména tyto principy:
 
 - frontend je hostovaný na **Vercel.com**,
 - data jsou uložená v **Supabase.com**,
-- autentizace používá **OIDC/OAuth** s výchozím poskytovatelem **Supabase**,
+- autentizace používá **Supabase Auth**,
 - vývoj a automatizace probíhají přes **GitHub**,
 - preview a produkční režim jsou zřetelně oddělené v konfiguraci i v UI,
 - preview data zůstávají izolovaná od produkčních dat.
@@ -47,7 +47,7 @@ Hodnota fáze 1 spočívá v tom, že se tento technický základ změní na prv
 
 Na konci fáze 1 má existovat nasaditelná aplikace, která:
 
-- umožní Uživateli přihlášení přes potvrzený OIDC/OAuth tok,
+- umožní Uživateli přihlášení přes potvrzený tok **email + magic link** v Supabase Auth,
 - oddělí veřejnou a chráněnou část aplikace,
 - po přihlášení zobrazí základní aplikační layout a navigaci,
 - udrží zřetelné odlišení `local`, `preview` a `production` režimu i v přihlášené části,
@@ -91,7 +91,7 @@ Po uzavření fáze 1 mají být k dispozici minimálně tyto artefakty:
    - zachovaná diagnostika prostředí a odlišení preview od production.
 
 2. **Přihlášení a odhlášení Uživatele**
-   - funkční OIDC/OAuth tok přes potvrzený Supabase setup,
+   - funkční Supabase Auth tok přes email a magic link,
    - návrat zpět do aplikace po úspěšném přihlášení,
    - srozumitelný stav při selhání nebo chybějícím oprávnění,
    - možnost bezpečně ukončit session.
@@ -135,13 +135,19 @@ Následující body nejsou v dosavadní dokumentaci uzavřené do plné implemen
 
 ### 1. Konkrétní podoba prvního přihlášení
 
-Potvrzené je, že autentizace bude přes **OIDC/OAuth** a výchozí identitní vrstvu poskytne **Supabase**. Před implementací je ale ještě potřeba uzavřít:
+Pro první verzi je nově potvrzeno, že:
 
-- který konkrétní provider nebo skupina providerů bude v první verzi aktivní,
-- jak má vypadat první přihlašovací obrazovka,
-- jak se budou řešit chybové a návratové stavy po redirectu.
+- autentizace poběží přes **Supabase Auth**,
+- nebude vyžadovaný externí poskytovatel identity,
+- přihlášení proběhne přes **email + magic link**.
 
-Bez tohoto rozhodnutí nelze spolehlivě dokončit redirecty, testovací identity ani smoke checklist pro preview.
+Před implementací je ale ještě potřeba uzavřít:
+
+- zda první verze povolí jen předem založené účty, nebo i samoobslužné vytvoření účtu,
+- jak má vypadat obrazovka pro zadání emailu,
+- jak se budou řešit chybové a návratové stavy po kliknutí na magic link.
+
+Bez těchto detailů nelze spolehlivě dokončit redirecty, testovací identity ani smoke checklist pro preview.
 
 ### 2. Zdroj aplikační role `admin` / `člen`
 
@@ -167,16 +173,15 @@ Bez tohoto bodu bude i minimální kontrola přihlášení obtížně opakovatel
 
 Následující část je **návrh konkrétního rozhodnutí** pro spuštění implementace fáze 1. Pokud bude tento směr přijatý, je vhodné jej považovat za výchozí pracovní zadání pro backlogové položky F1-01 až F1-04.
 
-### Návrh 1: první verze přihlášení
+### Rozhodnutí 1: první verze přihlášení
 
-Pro první implementaci se doporučuje tento minimální auth model:
+Pro první implementaci je potvrzený tento minimální auth model:
 
 - aplikace používá **Supabase Auth** jako jedinou auth bránu,
-- v první verzi je aktivní **právě jeden externí OAuth provider**, doporučeně **Google**,
-- UI v první verzi nenabízí výběr provideru,
+- v první verzi se nepoužívá externí poskytovatel identity,
 - veřejná landing page obsahuje jednu hlavní akci typu `Přihlásit se`,
-- po kliknutí se spustí OAuth tok přes Supabase Auth,
-- po úspěšném přihlášení se Uživatel vrací do chráněné části aplikace na `/app`.
+- po kliknutí Uživatel zadá email a systém odešle magic link,
+- po úspěšném otevření magic linku se Uživatel vrací do chráněné části aplikace na `/app`.
 
 #### Doporučené routy a návratové stavy
 
@@ -188,7 +193,7 @@ Pro první implementaci se doporučuje tento minimální auth model:
 #### Doporučené chování
 
 - při úspěchu: redirect do `/app`,
-- při zrušení nebo selhání provideru: návrat do veřejné zóny s čitelnou hláškou,
+- při neplatném, expirovaném nebo již použitelném magic linku: návrat do veřejné zóny s čitelnou hláškou,
 - při chybějící konfiguraci: explicitní chyba v aplikaci a v logu, ne tiché selhání,
 - při otevření chráněné routy bez session: redirect na `/`.
 
@@ -196,12 +201,10 @@ Pro první implementaci se doporučuje tento minimální auth model:
 
 Tento návrh drží fázi 1 co nejužší:
 
-- neřeší se výběr z více providerů,
+- neřeší se výběr z více providerů ani federace identit,
 - nebuduje se vlastní přihlašovací formulář ani správa hesel,
-- odpovědnost za OAuth konfiguraci zůstává v Supabase,
+- odpovědnost za autentizaci zůstává v Supabase,
 - preview a production lze ověřovat stejným tokem s odlišnými redirect URL.
-
-Pokud spolek už dnes používá jiný konkrétní OIDC provider, lze Google nahradit tímto poskytovatelem bez změny základního aplikačního návrhu. Důležité je zachovat pravidlo **jeden provider v první verzi**.
 
 ### Návrh 2: zdroj role `admin` / `člen`
 
@@ -215,7 +218,7 @@ Doporučený minimální model:
   - příznak aktivního přístupu,
   - volitelně navázaný `auth_user_id` po prvním úspěšném přihlášení,
 - aplikace po přihlášení čte roli **na server-side vrstvě**,
-- pokud se pro ověření používá email z identity, musí jít o email vrácený a ověřený providerem,
+- pokud se pro ověření používá email z identity, musí jít o email vedený jako ověřený v Supabase Auth,
 - pokud záznam neexistuje nebo je neaktivní, Uživatel se sice může autentizovat, ale nedostane přístup do chráněné části.
 
 #### Doporučené pravidlo pro fázi 1
@@ -234,16 +237,16 @@ Tento návrh:
 - umožní jednoduchý bootstrap testovacích identit,
 - zachová bezpečný stav `authenticated but unauthorized`, který bude potřeba i později.
 
-### Návrh 3: bootstrap prvních neprodukčních identit
+### Návrh 3: bootstrap prvních ověřovacích identit
 
-Pro local a preview se doporučuje zavést **dvě účelové neprodukční identity**, které nejsou navázané na osobní účty členů:
+Pro local, preview i production se doporučuje zavést **dvě účelové ověřovací identity**, které nejsou navázané na osobní účty členů:
 
 - `admin` testovací identita,
 - `člen` testovací identita.
 
 #### Doporučený provozní model
 
-- identity vytvoří správce Supabase Auth konfigurace,
+- identity vytvoří správce Supabase Auth konfigurace přímo v Supabase,
 - v repozitáři se vede pouze:
   - identifikátor účtu nebo email,
   - očekávaná role,
@@ -253,7 +256,7 @@ Pro local a preview se doporučuje zavést **dvě účelové neprodukční ident
 
 #### Doporučené pracovní pravidlo
 
-- pro preview a production se mají používat **dedikované neprodukční účty**, ne osobní identity implementátorů,
+- pro local, preview i production se mají používat **dedikované ověřovací účty**, ne osobní identity implementátorů,
 - local, preview a production mají mít předem zapsané redirect URL pro stejné dva ověřovací scénáře,
 - runbook má vždy popsat:
   - jak ověřit login jako `admin`,
@@ -512,7 +515,7 @@ Mít opakovatelný postup, jak fázi 1 ověřit lokálně, v preview i po merge.
 Níže je doporučené pořadí tak, aby se co nejdříve dostavil použitelný přihlášený shell bez zbytečného rozpracování domény:
 
 1. **Uzavřít auth vstupy a otevřená rozhodnutí**
-   - provider a redirecty,
+   - magic link flow, redirecty a režim založení účtů,
    - zdroj rolí,
    - testovací identity.
 
@@ -559,8 +562,10 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 1 minimálně
 
 ### F1-01: Auth vstupy a rozhodnutí
 
-- potvrdit první auth provider nebo sadu providerů,
+- potvrdit Supabase Auth bez externího poskytovatele identity,
+- potvrdit přihlášení přes email + magic link,
 - zapsat redirect URL pro local, preview a production,
+- potvrdit režim vytváření prvních účtů,
 - potvrdit zdroj role `admin` / `člen`,
 - zapsat způsob bootstrapu testovacích identit.
 
@@ -612,7 +617,8 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 1 minimálně
 
 Před prvním kódovým PR mají být potvrzené tyto body:
 
-- [ ] je potvrzený konkrétní auth provider nebo sada providerů pro první verzi,
+- [x] je potvrzeno, že první auth tok běží přes Supabase Auth bez externího poskytovatele identity,
+- [x] je potvrzeno, že první přihlášení používá email + magic link,
 - [ ] jsou zapsané redirect URL pro local, preview a production,
 - [ ] je rozhodnutý zdroj role `admin` / `člen`,
 - [ ] existuje alespoň jedna testovací identita `admin`,
@@ -639,7 +645,7 @@ Fázi 1 lze považovat za dokončenou teprve tehdy, když platí vše níže:
 
 ### Riziko: autentizace funguje jen v jednom prostředí
 
-Pokud bude login odladěný jen lokálně nebo jen v produkci, velmi rychle se rozpadne preview workflow. Redirecty a callbacky proto musí být ověřené ve všech třech režimech: `local`, `preview`, `production`.
+Pokud bude login odladěný jen lokálně nebo jen v produkci, velmi rychle se rozpadne preview workflow. Redirecty a callbacky magic linku proto musí být ověřené ve všech třech režimech: `local`, `preview`, `production`.
 
 ### Riziko: role jsou jen kosmetické
 

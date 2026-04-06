@@ -66,6 +66,12 @@ Každý uživatel musí vždy rozumět:
 - zda je na něco přihlášen,
 - zda jde o produkční nebo testovací verzi aplikace.
 
+Pro první implementační verzi přihlášení platí jako výchozí směr:
+
+- Uživatel se přihlašuje přes **Supabase Auth**,
+- bez externího poskytovatele identity,
+- pomocí emailu a **magic linku**.
+
 ---
 
 # 3. Use journeys pro běžný provoz spolku

@@ -48,9 +48,10 @@ NEXT_PUBLIC_APP_ENV=local
 
 Přehled všech proměnných, jejich významu a správy je popsaný v dokumentu [Konfigurace prostředí](konfigurace-prostredi.md). Repo-side nastavení Vercelu, mapování preview a production prostředí a postup ověření jsou popsané v dokumentu [Vercel integrace](vercel-integrace.md).
 
-Pro navazující Fázi 1 se jako výchozí návrh počítá s tím, že:
+Pro navazující Fázi 1 se jako výchozí zadání počítá s tím, že:
 
-- první přihlášení poběží přes **Supabase Auth** a právě jeden externí OAuth provider, doporučeně Google,
+- první přihlášení poběží přes **Supabase Auth** bez externího poskytovatele identity,
+- uživatel zadá email a přihlášení dokončí přes magic link,
 - local bude používat callback `http://localhost:3000/auth/callback`,
 - preview bude používat callback `https://<preview-host>/auth/callback`,
 - production bude používat callback `https://<produkční-doména>/auth/callback`,

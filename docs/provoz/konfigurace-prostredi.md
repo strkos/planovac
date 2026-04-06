@@ -44,13 +44,11 @@ Toto pravidlo je důležité proto, aby:
 | `SUPABASE_SERVICE_ROLE_KEY` | token | neveřejná | F0-04 | Serverové operace, migrace, seed a práce s preview snapshoty. Nikdy nesmí být vystavena klientovi. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 | `SUPABASE_PREVIEW_SCHEMA_PREFIX` | string | neveřejná | F0-04 | Prefix pro naming preview schémat, očekávaně `preview_`. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 | `SMOKE_BASE_URL` | URL | neveřejná | F0-07 | Cílová URL pro `npm run smoke`; typicky `http://localhost:3000`, preview host nebo produkční doména. | lokální `.env.local`, GitHub secrets, Vercel env vars |
-| `OIDC_ISSUER_URL` | URL | neveřejná | F1 | Konfigurace OIDC/OAuth poskytovatele, výchozí Supabase Auth. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
-| `OIDC_CLIENT_ID` | string | neveřejná | F1 | Identifikátor klienta pro přihlášení Uživatele. | lokální neveřejný `.env.local`, Vercel env vars |
-| `OIDC_CLIENT_SECRET` | secret | neveřejná | F1 | Tajný klíč pro serverovou část přihlašovacího toku. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
+| `SUPABASE_AUTH_REDIRECT_PATH` | path | veřejná | F1 | Cesta callbacku pro dokončení magic link přihlášení, očekávaně `/auth/callback`. | lokální `.env.local`, Vercel env vars |
 
 ## Doporučený auth model pro F1
 
-Detail fáze 1 doporučuje pro první implementaci použít **Supabase Auth jako jedinou auth bránu** a v první verzi aktivovat právě **jeden externí OAuth provider**, doporučeně Google.
+Detail fáze 1 doporučuje pro první implementaci použít **Supabase Auth jako jedinou auth bránu** bez externího poskytovatele identity a přihlášení řešit přes **email + magic link**.
 
 Pro tento směr je důležité rozlišit dvě vrstvy konfigurace:
 
@@ -58,15 +56,16 @@ Pro tento směr je důležité rozlišit dvě vrstvy konfigurace:
    - `NEXT_PUBLIC_APP_BASE_URL`
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_AUTH_REDIRECT_PATH`
    - případně server-side klíče pro lookup role v Supabase
 
-2. **Konfigurace externího provideru**
+2. **Konfigurace Supabase Auth**
+   - povolený email login,
+   - magic link šablony a odesílání emailu,
    - redirect URL,
-   - provider client ID,
-   - provider client secret,
-   - případné allowlisty domén nebo callback pravidla
+   - případné allowlisty domén nebo další bezpečnostní pravidla
 
-Pro doporučený směr F1 má druhá vrstva zůstat primárně v **Supabase Auth konfiguraci**, ne v repozitářové aplikaci. Aplikační runtime tak nemusí nutně znát přímé secret hodnoty externího provideru, pokud celý OAuth tok zprostředkovává Supabase.
+Pro doporučený směr F1 má auth konfigurace zůstat primárně v **Supabase Auth**, ne v externím identity provideru ani ve vlastním heslovém formuláři aplikace.
 
 ### Doporučené redirect URL pro F1
 
@@ -101,7 +100,7 @@ Neveřejné hodnoty se v repozitáři nikdy necommitují. Lokálně patří do s
 Typicky sem patří:
 
 - serverové Supabase klíče,
-- client secret pro OIDC,
+- neveřejné hodnoty pro server-side auth nebo správu šablon v Supabase Auth,
 - budoucí integrační tokeny pro CI nebo deployment.
 
 ### Platformní proměnné
