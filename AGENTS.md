@@ -36,7 +36,7 @@ Následující technologická rozhodnutí jsou v tomto repozitáři již potvrze
 
 - Hosting frontendu: **Vercel.com**
 - Uložení dat: **Supabase.com**
-- Autentizace: **OIDC/OAuth**, s tím, že výchozím poskytovatelem je **Supabase**
+- Autentizace: **Supabase Auth**, přičemž výchozí přihlášení pro první verzi používá **email + magic link** bez externího poskytovatele identity
 - Vývoj a spolupráce: **GitHub**, a to včetně samoobslužného rozvoje aplikace
 
 Pokud budou budoucí dokumenty popisovat technickou architekturu, deployment nebo vývojový workflow, musí z těchto voleb vycházet.
@@ -81,7 +81,7 @@ Důležitá pravidla, která už dnes v dokumentaci existují:
 ### Při doplňování implementačních detailů
 
 - Nevymýšlej nové konkrétní frameworky, databázové technologie, hosting nebo API kontrakty, pokud to uživatel výslovně nechce.
-- Respektuj už potvrzené technologické volby v tomto souboru: Vercel pro frontend hosting, Supabase pro data, OIDC/OAuth se Supabase jako výchozím poskytovatelem identity a GitHub jako vývojovou platformu.
+- Respektuj už potvrzené technologické volby v tomto souboru: Vercel pro frontend hosting, Supabase pro data, Supabase Auth s výchozím přihlášením přes email + magic link bez externího poskytovatele identity a GitHub jako vývojovou platformu.
 - Pokud je potřeba navrhnout technické řešení, označ ho jasně jako **návrh** nebo ho odděl do samostatného návrhového dokumentu.
 
 ### Při přidávání nových souborů

@@ -44,9 +44,38 @@ Toto pravidlo je důležité proto, aby:
 | `SUPABASE_SERVICE_ROLE_KEY` | token | neveřejná | F0-04 | Serverové operace, migrace, seed a práce s preview snapshoty. Nikdy nesmí být vystavena klientovi. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 | `SUPABASE_PREVIEW_SCHEMA_PREFIX` | string | neveřejná | F0-04 | Prefix pro naming preview schémat, očekávaně `preview_`. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 | `SMOKE_BASE_URL` | URL | neveřejná | F0-07 | Cílová URL pro `npm run smoke`; typicky `http://localhost:3000`, preview host nebo produkční doména. | lokální `.env.local`, GitHub secrets, Vercel env vars |
-| `OIDC_ISSUER_URL` | URL | neveřejná | F1 | Konfigurace OIDC/OAuth poskytovatele, výchozí Supabase Auth. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
-| `OIDC_CLIENT_ID` | string | neveřejná | F1 | Identifikátor klienta pro přihlášení Uživatele. | lokální neveřejný `.env.local`, Vercel env vars |
-| `OIDC_CLIENT_SECRET` | secret | neveřejná | F1 | Tajný klíč pro serverovou část přihlašovacího toku. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
+| `SUPABASE_AUTH_REDIRECT_PATH` | path | veřejná | F1 | Cesta callbacku pro dokončení magic link přihlášení, očekávaně `/auth/callback`. | lokální `.env.local`, Vercel env vars |
+
+## Doporučený auth model pro F1
+
+Detail fáze 1 doporučuje pro první implementaci použít **Supabase Auth jako jedinou auth bránu** bez externího poskytovatele identity a přihlášení řešit přes **email + magic link**.
+
+Pro tento směr je důležité rozlišit dvě vrstvy konfigurace:
+
+1. **Konfigurace aplikace**
+   - `NEXT_PUBLIC_APP_BASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_AUTH_REDIRECT_PATH`
+   - případně server-side klíče pro lookup role v Supabase
+
+2. **Konfigurace Supabase Auth**
+   - povolený email login,
+   - magic link šablony a odesílání emailu,
+   - redirect URL,
+   - případné allowlisty domén nebo další bezpečnostní pravidla
+
+Pro doporučený směr F1 má auth konfigurace zůstat primárně v **Supabase Auth**, ne v externím identity provideru ani ve vlastním heslovém formuláři aplikace.
+
+### Doporučené redirect URL pro F1
+
+Před implementací mají být v auth konfiguraci připravené minimálně tyto návratové adresy:
+
+- `http://localhost:3000/auth/callback`
+- `https://<preview-host>/auth/callback`
+- `https://<produkční-doména>/auth/callback`
+
+Pokud se bude používat samostatná chybová route, je vhodné mít zdokumentovaný i návrat na veřejnou vstupní stránku nebo na `/auth/chyba`.
 
 ## Zásady práce s proměnnými
 
@@ -71,7 +100,7 @@ Neveřejné hodnoty se v repozitáři nikdy necommitují. Lokálně patří do s
 Typicky sem patří:
 
 - serverové Supabase klíče,
-- client secret pro OIDC,
+- neveřejné hodnoty pro server-side auth nebo správu šablon v Supabase Auth,
 - budoucí integrační tokeny pro CI nebo deployment.
 
 ### Platformní proměnné

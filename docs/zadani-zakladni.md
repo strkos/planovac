@@ -76,6 +76,19 @@ Aplikace slouží pro:
 
 ---
 
+## 🔐 Autentizace a identita
+
+Autentizace používá **Supabase Auth** jako výchozí identitní vrstvu.
+
+Pro **Fázi 1 - minimální aplikační kostra** je výchozí rozhodnutí následující:
+
+- aplikace nepoužívá externího poskytovatele identity,
+- Uživatelé jsou zakládaní přímo v Supabase Auth,
+- první přihlášení probíhá pomocí **emailu a magic linku**,
+- aplikační role `admin` a `člen` nejsou odvozované jen z auth identity, ale z navazující aplikační autorizační vrstvy.
+
+---
+
 ## 🧠 Práce s daty
 
 ### Schema-per-feature

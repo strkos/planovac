@@ -17,7 +17,7 @@ Plán vychází z již potvrzených voleb v repozitáři:
 
 - frontend bude hostovaný na **Vercel.com**,
 - data budou uložená v **Supabase.com**,
-- autentizace bude přes **OIDC/OAuth** s výchozím poskytovatelem **Supabase**,
+- autentizace bude přes **Supabase Auth**,
 - zdrojový kód a automatizace poběží přes **GitHub**.
 
 Současně respektuje produktové zadání:
@@ -104,9 +104,15 @@ V této fázi je v pořádku, pokud aplikace ještě neumí skoro žádné domé
 ### Cíl
 Mít nasaditelnou aplikaci, do které je možné se přihlásit a která jasně ukazuje stav prostředí.
 
+### Detailní rozpad fáze
+
+Podrobný prováděcí plán této etapy je rozepsaný v dokumentu
+[Detailní implementační plán: Fáze 1 - Minimální aplikační kostra](faze-1-minimalni-aplikacni-kostra.md).
+
 ### Obsah
 
-- přihlášení Uživatele přes zvolený OIDC/OAuth tok,
+- přihlášení Uživatele přes Supabase Auth,
+- v první implementaci pomocí emailu a magic linku,
 - základní aplikační layout,
 - navigace pro hlavní sekce,
 - prázdné nebo jednoduché obrazovky pro budoucí moduly,

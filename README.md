@@ -45,6 +45,7 @@ npm run build
 - [Use journeys a uživatelské požadavky](docs/scenare-pouziti.md)
 - [Návrh implementačního plánu](docs/plan-implementace.md)
 - [Detailní implementační plán fáze 0](docs/faze-0-zaklad-repozitare-a-delivery-pipeline.md)
+- [Detailní implementační plán fáze 1](docs/faze-1-minimalni-aplikacni-kostra.md)
 - [Lokální start projektu](docs/provoz/lokalni-start.md)
 - [Cloud agent environment pro Node/npm](docs/provoz/cloud-agent-environment.md)
 - [GitHub CI](docs/provoz/github-ci.md)

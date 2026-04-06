@@ -24,7 +24,7 @@ Při implementaci musí zůstat zachované zejména tyto principy:
 
 - frontend je hostovaný na **Vercel.com**,
 - data jsou uložená v **Supabase.com**,
-- autentizace používá **OIDC/OAuth** s výchozím poskytovatelem **Supabase**,
+- autentizace používá **Supabase Auth** jako výchozí identitní vrstvu,
 - vývoj a automatizace probíhají přes **GitHub**,
 - preview data jsou oddělená od produkce a pracují v režimu **schema-per-feature**,
 - preview data se nikdy nevracejí zpět do produkčních dat.
@@ -666,3 +666,5 @@ Fáze 1 by měla začít až po zkušebním end-to-end průchodu přes:
 - produkční deployment.
 
 Teprve v této chvíli má smysl přidávat přihlášení Uživatele, chráněnou část aplikace a rozlišení rolí v aplikačním shellu.
+Podrobný navazující rozpad je popsaný v dokumentu
+[Detailní implementační plán: Fáze 1 - Minimální aplikační kostra](faze-1-minimalni-aplikacni-kostra.md).
