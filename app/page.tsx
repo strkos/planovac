@@ -2,6 +2,8 @@ import { EnvironmentBadge } from "@/components/environment-badge";
 import { getEnvironmentConfig } from "@/lib/env";
 
 const nextSteps = [
+  "Dopsat smoke overeni migraci, seedu a aplikace v ramci F0-07.",
+  "Po merge do main potvrdit, ze stejny commit a diagnostika dosly i do production v ramci F0-08.",
   "Spustit npm run smoke proti preview deploymentu po otevreni pull requestu.",
   "Overit prvni zkuseni delivery pruchod pres PR a merge v ramci F0-08.",
 ];
@@ -13,18 +15,51 @@ const currentOutputs = [
   "prvni verzovana SQL migrace v supabase/migrations/",
   "demo seed dataset v supabase/seed/seed.sql",
   "repo-side Vercel konfigurace ve vercel.json a runbook pro preview/production",
+  "zkusebni F0-08 evidence panel pro PR preview a navazujici merge do main",
   "runtime endpoint /api/health s JSON diagnostikou prostredi, URL a commitu",
 ];
 
 export default function HomePage() {
   const environment = getEnvironmentConfig();
   const shortCommitSha = environment.commitSha?.slice(0, 7) ?? null;
+  const deliveryRunChecks = [
+    {
+      label: "Zmena je zamerne minimalni",
+      status: "pass" as const,
+      detail:
+        "Domovska stranka a provozni dokumentace rozsiruji dohledatelnost delivery bez zasahu do domenoveho chovani aplikace.",
+    },
+    {
+      label: "Pull request ma citelne preview dukazy",
+      status:
+        environment.environment === "preview" || environment.environment === "production"
+          ? ("pass" as const)
+          : ("warning" as const),
+      detail:
+        environment.environment === "preview"
+          ? `Preview bezi pro vetev ${environment.gitCommitRef ?? "neznamou"} a ukazuje commit ${shortCommitSha ?? "neni k dispozici"}.`
+          : environment.environment === "production"
+            ? `Tento commit uz dosel i mimo preview; dohledatelnost zustava zachovana pres commit ${shortCommitSha ?? "neni k dispozici"}.`
+            : "Po otevreni PR zkontrolujte status checks, preview URL, branch ref a commit SHA na teto strance.",
+    },
+    {
+      label: "Merge do main musi potvrdit production deployment",
+      status:
+        environment.environment === "production" ? ("pass" as const) : ("warning" as const),
+      detail:
+        environment.environment === "production"
+          ? `Production runtime potvrzuje release na commitu ${shortCommitSha ?? "neni k dispozici"} a ma mit stejnou dohledatelnost jako preview.`
+          : "Po merge do main overte, ze se stejny commit objevil v production a badge se prepne na production.",
+    },
+  ];
 
   return (
     <main className="page">
       <section className="hero">
         <div className="hero-header">
           <div>
+            <p className="eyebrow">planovac / F0-08</p>
+            <h1>Zkusebni delivery pruchod ma jasne dukazy pro PR preview i merge do main.</h1>
             <p className="eyebrow">planovac / F0-07</p>
             <h1>Smoke scenar a diagnostika maji byt dohledatelne z aplikace i runtime endpointu.</h1>
           </div>
@@ -285,6 +320,61 @@ export default function HomePage() {
               <dd>
                 Neverejne Supabase klice a preview schema prefix musi byt pro
                 preview a production spravovane oddelene.
+              </dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <section className="status-grid" aria-label="Zkusebni delivery pruchod">
+        <article className="card">
+          <h2>F0-08: Zkusebni delivery pruchod</h2>
+          <p>
+            Tato iterace zamerne nepridava novou domenovou funkcionalitu. Misto
+            toho vytvari citelny dukaz, ze mala zmena umi projit pres pull
+            request, preview deployment a navazujici merge do <code>main</code>.
+          </p>
+          <ul className="status-list">
+            {deliveryRunChecks.map((check) => (
+              <li key={check.label} className="status-item" data-status={check.status}>
+                <span className="status-dot" aria-hidden="true" />
+                <div>
+                  <strong>{check.label}</strong>
+                  <p>{check.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="card">
+          <h2>Co ma reviewer overit</h2>
+          <dl className="env-properties">
+            <div className="env-property">
+              <dt>V pull requestu</dt>
+              <dd>
+                Uspesne status checks <code>install</code>, <code>lint</code>,{" "}
+                <code>build</code> a <code>validate-supabase</code>.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>V preview verzi</dt>
+              <dd>
+                Preview URL, zdrojovou vetev, commit SHA a odliseni preview od
+                production.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Po merge do main</dt>
+              <dd>
+                Stejny commit v production, badge <code>production</code> a
+                dohledatelnou produkcni URL.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Runbook</dt>
+              <dd>
+                <code>docs/provoz/zkusebni-delivery-pruchod.md</code>
               </dd>
             </div>
           </dl>
