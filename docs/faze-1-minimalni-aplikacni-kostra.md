@@ -163,6 +163,115 @@ Je potřeba potvrdit:
 
 Bez tohoto bodu bude i minimální kontrola přihlášení obtížně opakovatelná.
 
+## Doporučené uzavření otevřených bodů
+
+Následující část je **návrh konkrétního rozhodnutí** pro spuštění implementace fáze 1. Pokud bude tento směr přijatý, je vhodné jej považovat za výchozí pracovní zadání pro backlogové položky F1-01 až F1-04.
+
+### Návrh 1: první verze přihlášení
+
+Pro první implementaci se doporučuje tento minimální auth model:
+
+- aplikace používá **Supabase Auth** jako jedinou auth bránu,
+- v první verzi je aktivní **právě jeden externí OAuth provider**, doporučeně **Google**,
+- UI v první verzi nenabízí výběr provideru,
+- veřejná landing page obsahuje jednu hlavní akci typu `Přihlásit se`,
+- po kliknutí se spustí OAuth tok přes Supabase Auth,
+- po úspěšném přihlášení se Uživatel vrací do chráněné části aplikace na `/app`.
+
+#### Doporučené routy a návratové stavy
+
+- `/` - veřejná vstupní stránka s tlačítkem přihlášení,
+- `/auth/callback` - technická callback route pro dokončení přihlášení,
+- `/app` - výchozí chráněná domovská stránka po přihlášení,
+- `/auth/chyba` nebo ekvivalentní stav na `/` - srozumitelný návrat při neúspěchu.
+
+#### Doporučené chování
+
+- při úspěchu: redirect do `/app`,
+- při zrušení nebo selhání provideru: návrat do veřejné zóny s čitelnou hláškou,
+- při chybějící konfiguraci: explicitní chyba v aplikaci a v logu, ne tiché selhání,
+- při otevření chráněné routy bez session: redirect na `/`.
+
+#### Proč právě tento směr
+
+Tento návrh drží fázi 1 co nejužší:
+
+- neřeší se výběr z více providerů,
+- nebuduje se vlastní přihlašovací formulář ani správa hesel,
+- odpovědnost za OAuth konfiguraci zůstává v Supabase,
+- preview a production lze ověřovat stejným tokem s odlišnými redirect URL.
+
+Pokud spolek už dnes používá jiný konkrétní OIDC provider, lze Google nahradit tímto poskytovatelem bez změny základního aplikačního návrhu. Důležité je zachovat pravidlo **jeden provider v první verzi**.
+
+### Návrh 2: zdroj role `admin` / `člen`
+
+Pro fázi 1 se doporučuje zavést **samostatnou minimální server-side access tabulku v Supabase**, která nebude ještě plnou evidencí Uživatelů, ale pouze řízeným mapováním přihlášené identity na aplikační roli.
+
+Doporučený minimální model:
+
+- tabulka obsahuje alespoň:
+  - normalizovaný email,
+  - roli `admin` nebo `člen`,
+  - příznak aktivního přístupu,
+  - volitelně navázaný `auth_user_id` po prvním úspěšném přihlášení,
+- aplikace po přihlášení čte roli **na server-side vrstvě**,
+- pokud se pro ověření používá email z identity, musí jít o email vrácený a ověřený providerem,
+- pokud záznam neexistuje nebo je neaktivní, Uživatel se sice může autentizovat, ale nedostane přístup do chráněné části.
+
+#### Doporučené pravidlo pro fázi 1
+
+- **zdrojem pravdy pro oprávnění není klientská session**, ale server-side lookup v Supabase,
+- **email je pro fázi 1 přijatelný bootstrap identifikátor**,
+- po prvním loginu je vhodné uložit i vazbu na `auth_user_id`, aby další fáze mohly přejít na stabilnější identifikátor bez rozbití stávajícího mapování,
+- plná doménová evidence Uživatelů může vzniknout až v navazující fázi.
+
+#### Proč právě tento směr
+
+Tento návrh:
+
+- nevyžaduje zavedení celé doménové tabulky Uživatelů už ve fázi 1,
+- dává skutečný server-side základ pro autorizaci,
+- umožní jednoduchý bootstrap testovacích identit,
+- zachová bezpečný stav `authenticated but unauthorized`, který bude potřeba i později.
+
+### Návrh 3: bootstrap prvních neprodukčních identit
+
+Pro local a preview se doporučuje zavést **dvě účelové neprodukční identity**, které nejsou navázané na osobní účty členů:
+
+- `admin` testovací identita,
+- `člen` testovací identita.
+
+#### Doporučený provozní model
+
+- identity vytvoří správce Supabase Auth konfigurace,
+- v repozitáři se vede pouze:
+  - identifikátor účtu nebo email,
+  - očekávaná role,
+  - prostředí, v nichž má být účet použitelný,
+- skutečný přístup k účtu nebo mailboxu se neukládá do gitu,
+- v access tabulce pro role existují odpovídající záznamy pro `admin` i `člen`.
+
+#### Doporučené pracovní pravidlo
+
+- pro preview a production se mají používat **dedikované neprodukční účty**, ne osobní identity implementátorů,
+- local, preview a production mají mít předem zapsané redirect URL pro stejné dva ověřovací scénáře,
+- runbook má vždy popsat:
+  - jak ověřit login jako `admin`,
+  - jak ověřit login jako `člen`,
+  - jak ověřit stav bez role.
+
+#### Minimální evidenční forma
+
+Pro fázi 1 stačí jednoduchý neveřejný provozní seznam mimo git a současně stručný veřejný popis v dokumentaci, že existují:
+
+- jedna testovací identita pro `admin`,
+- jedna testovací identita pro `člen`,
+- jeden očekávaný unauthorized scénář bez role.
+
+#### Proč právě tento směr
+
+Tento model umožní opakovatelné ověření preview i produkce bez improvizace a bez závislosti na tom, kdo změnu právě implementuje nebo reviewuje.
+
 ## Doporučený cílový obraz pro fázi 1
 
 Následující část je **návrh technického směru**, který je kompatibilní se stávajícím zadáním a dává dobrý základ pro další fáze. Pokud se tým rozhodne jinak, je potřeba změnu zapsat do dokumentace.

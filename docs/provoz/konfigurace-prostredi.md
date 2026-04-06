@@ -48,6 +48,36 @@ Toto pravidlo je důležité proto, aby:
 | `OIDC_CLIENT_ID` | string | neveřejná | F1 | Identifikátor klienta pro přihlášení Uživatele. | lokální neveřejný `.env.local`, Vercel env vars |
 | `OIDC_CLIENT_SECRET` | secret | neveřejná | F1 | Tajný klíč pro serverovou část přihlašovacího toku. | lokální neveřejný `.env.local`, GitHub secrets, Vercel env vars |
 
+## Doporučený auth model pro F1
+
+Detail fáze 1 doporučuje pro první implementaci použít **Supabase Auth jako jedinou auth bránu** a v první verzi aktivovat právě **jeden externí OAuth provider**, doporučeně Google.
+
+Pro tento směr je důležité rozlišit dvě vrstvy konfigurace:
+
+1. **Konfigurace aplikace**
+   - `NEXT_PUBLIC_APP_BASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - případně server-side klíče pro lookup role v Supabase
+
+2. **Konfigurace externího provideru**
+   - redirect URL,
+   - provider client ID,
+   - provider client secret,
+   - případné allowlisty domén nebo callback pravidla
+
+Pro doporučený směr F1 má druhá vrstva zůstat primárně v **Supabase Auth konfiguraci**, ne v repozitářové aplikaci. Aplikační runtime tak nemusí nutně znát přímé secret hodnoty externího provideru, pokud celý OAuth tok zprostředkovává Supabase.
+
+### Doporučené redirect URL pro F1
+
+Před implementací mají být v auth konfiguraci připravené minimálně tyto návratové adresy:
+
+- `http://localhost:3000/auth/callback`
+- `https://<preview-host>/auth/callback`
+- `https://<produkční-doména>/auth/callback`
+
+Pokud se bude používat samostatná chybová route, je vhodné mít zdokumentovaný i návrat na veřejnou vstupní stránku nebo na `/auth/chyba`.
+
 ## Zásady práce s proměnnými
 
 ### Veřejné proměnné
