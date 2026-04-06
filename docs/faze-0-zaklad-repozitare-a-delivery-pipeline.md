@@ -666,3 +666,5 @@ Fáze 1 by měla začít až po zkušebním end-to-end průchodu přes:
 - produkční deployment.
 
 Teprve v této chvíli má smysl přidávat přihlášení Uživatele, chráněnou část aplikace a rozlišení rolí v aplikačním shellu.
+Podrobný navazující rozpad je popsaný v dokumentu
+[Detailní implementační plán: Fáze 1 - Minimální aplikační kostra](faze-1-minimalni-aplikacni-kostra.md).

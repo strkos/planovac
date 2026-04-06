@@ -104,6 +104,11 @@ V této fázi je v pořádku, pokud aplikace ještě neumí skoro žádné domé
 ### Cíl
 Mít nasaditelnou aplikaci, do které je možné se přihlásit a která jasně ukazuje stav prostředí.
 
+### Detailní rozpad fáze
+
+Podrobný prováděcí plán této etapy je rozepsaný v dokumentu
+[Detailní implementační plán: Fáze 1 - Minimální aplikační kostra](faze-1-minimalni-aplikacni-kostra.md).
+
 ### Obsah
 
 - přihlášení Uživatele přes zvolený OIDC/OAuth tok,
