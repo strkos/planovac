@@ -4,15 +4,19 @@ import { getEnvironmentConfig } from "@/lib/env";
 const nextSteps = [
   "Dopsat smoke overeni migraci, seedu a aplikace v ramci F0-07.",
   "Po merge do main potvrdit, ze stejny commit a diagnostika dosly i do production v ramci F0-08.",
+  "Spustit npm run smoke proti preview deploymentu po otevreni pull requestu.",
+  "Overit prvni zkuseni delivery pruchod pres PR a merge v ramci F0-08.",
 ];
 
 const currentOutputs = [
   ".github/workflows/ci.yml s joby install, lint, build a validate-supabase",
   "npm skripty pro validaci .env.example a Supabase artefaktu",
+  "npm run smoke pro kontrolu homepage a /api/health nad SMOKE_BASE_URL",
   "prvni verzovana SQL migrace v supabase/migrations/",
   "demo seed dataset v supabase/seed/seed.sql",
   "repo-side Vercel konfigurace ve vercel.json a runbook pro preview/production",
   "zkusebni F0-08 evidence panel pro PR preview a navazujici merge do main",
+  "runtime endpoint /api/health s JSON diagnostikou prostredi, URL a commitu",
 ];
 
 export default function HomePage() {
@@ -56,14 +60,16 @@ export default function HomePage() {
           <div>
             <p className="eyebrow">planovac / F0-08</p>
             <h1>Zkusebni delivery pruchod ma jasne dukazy pro PR preview i merge do main.</h1>
+            <p className="eyebrow">planovac / F0-07</p>
+            <h1>Smoke scenar a diagnostika maji byt dohledatelne z aplikace i runtime endpointu.</h1>
           </div>
           <EnvironmentBadge />
         </div>
         <p className="lead">
-          Tato stranka navazuje na GitHub CI, Supabase baseline a Vercel integraci
-          z predchozich kroku faze 0 a slouzi jako zamerne mala zmena pro
-          zkusebni delivery pruchod. Reviewer i organizator diky ni mohou
-          porovnat branch ref, URL a commit mezi preview a production verzi.
+          Tato stranka overuje, ze minimalni Next.js aplikace vedle GitHub CI a
+          Supabase baseline obsahuje i pouzitelny smoke scenar nad preview a
+          production deploymenty, vcetne diagnostiky prostredi, URL, commitu a
+          zdravotniho endpointu pro strojove overeni.
         </p>
         <div className="hero-meta" aria-label="Diagnostika prostredi">
           <p>
@@ -105,6 +111,9 @@ export default function HomePage() {
           <span className="status-pill" data-variant="info">
             Zdroj base URL: <code>{environment.baseUrlSource}</code>
           </span>
+          <span className="status-pill" data-variant="info">
+            Smoke base URL: <code>{process.env.SMOKE_BASE_URL ?? "neni nastavena"}</code>
+          </span>
         </div>
       </section>
 
@@ -113,8 +122,8 @@ export default function HomePage() {
           <h2>Aplikace</h2>
           <p>
             App Router bezi z adresare <code>app/</code> a repozitar ma
-            pripraveny lint, build, CI workflow, Vercel konfiguraci a strukturu
-            pro navazujici databazove iterace.
+            pripraveny lint, build, CI workflow, Vercel konfiguraci, health
+            endpoint a smoke runner pro navazujici preview overeni.
           </p>
         </article>
 
@@ -194,7 +203,8 @@ export default function HomePage() {
           <p>
             GitHub CI dal hlida build a repozitarove artefakty, zatimco
             Supabase baseline pripravuje migrace, preview metadata a demo data
-            pro navazujici preview workflow.
+            pro navazujici preview workflow. Smoke overeni se pousti explicitne
+            nad nasazenou URL, aby slo stejne pouzit lokalne i po deployi.
           </p>
           <dl className="env-properties">
             <div className="env-property">
@@ -243,6 +253,36 @@ export default function HomePage() {
         </article>
 
         <article className="card">
+          <h2>Zdravotni endpoint</h2>
+          <p>
+            Endpoint <code>/api/health</code> vraci JSON se stavem runtime
+            diagnostiky. Smoke script z nej cte prostredi, commit a vysledky
+            jednotlivych kontrol bez parsovani HTML.
+          </p>
+          <dl className="env-properties">
+            <div className="env-property">
+              <dt>URL</dt>
+              <dd>
+                <code>{`${environment.baseUrl ?? "http://localhost:3000"}/api/health`}</code>
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>HTTP status</dt>
+              <dd>
+                <code>200</code> pri konzistentnim mapovani, jinak <code>503</code>.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Payload</dt>
+              <dd>
+                Obsahuje <code>environment</code>, <code>baseUrl</code>,{" "}
+                <code>commitSha</code> a pole <code>checks</code>.
+              </dd>
+            </div>
+          </dl>
+        </article>
+
+        <article className="card">
           <h2>Mapovani promennych do Vercelu</h2>
           <dl className="env-properties">
             <div className="env-property">
@@ -266,6 +306,13 @@ export default function HomePage() {
               <dd>
                 Ve Vercelu ma zustat zapnute automaticke vystaveni systemovych
                 promennych pro diagnostiku v Next.js runtime.
+              </dd>
+            </div>
+            <div className="env-property">
+              <dt>Smoke URL</dt>
+              <dd>
+                <code>SMOKE_BASE_URL</code> ma pro dane prostredi mirit na URL,
+                proti ktere se spousti <code>npm run smoke</code>.
               </dd>
             </div>
             <div className="env-property">
@@ -332,6 +379,27 @@ export default function HomePage() {
             </div>
           </dl>
         </article>
+      </section>
+
+      <section className="card next-steps">
+        <h2>Smoke scenar F0-07</h2>
+        <ol>
+          <li>
+            Po deployi nastavte <code>SMOKE_BASE_URL</code> na preview nebo
+            produkcni URL.
+          </li>
+          <li>
+            Spustte <code>npm run smoke</code>.
+          </li>
+          <li>
+            Ocekavejte uspesnou odpoved z <code>/api/health</code> a pritomnost
+            klicovych markeru na homepage.
+          </li>
+          <li>
+            Pokud smoke selze, zkontrolujte badge prostredi, runtime URL a pole{" "}
+            <code>checks</code> v health payloadu.
+          </li>
+        </ol>
       </section>
 
       <section className="card next-steps">

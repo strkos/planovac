@@ -40,6 +40,26 @@ export type EnvironmentConfig = {
   isConsistent: boolean;
 };
 
+export type EnvironmentHealth = {
+  app: "planovac";
+  phase: "F0-07";
+  ok: boolean;
+  status: "pass" | "warning";
+  checkedAt: string;
+  environment: AppEnvironment;
+  source: EnvironmentSource;
+  sourceValue: string;
+  description: string;
+  baseUrl: string | null;
+  baseUrlSource: EnvironmentBaseUrlSource;
+  deploymentUrl: string | null;
+  branchUrl: string | null;
+  productionUrl: string | null;
+  gitCommitRef: string | null;
+  commitSha: string | null;
+  checks: EnvironmentCheck[];
+};
+
 function isAppEnvironment(value: string | undefined | null): value is AppEnvironment {
   return value === "local" || value === "preview" || value === "production";
 }
@@ -108,7 +128,7 @@ function getBaseUrl(
 
   if (explicitBaseUrl) {
     return {
-      value: explicitBaseUrl,
+      value: normalizeUrl(explicitBaseUrl),
       source: "NEXT_PUBLIC_APP_BASE_URL",
     };
   }
@@ -159,6 +179,15 @@ function buildChecks(config: Omit<EnvironmentConfig, "checks" | "isConsistent">)
       : config.vercelEnvironment && isAppEnvironment(config.vercelEnvironment)
         ? config.vercelEnvironment
         : null;
+
+  if (config.environment === "local") {
+    checks.push({
+      id: "local-runtime-ready",
+      label: "Lokalni runtime ma zakladni diagnostiku",
+      status: "pass",
+      detail: `Aplikace bezi lokalne na ${config.baseUrl ?? "http://localhost:3000"} a muze obslouzit smoke endpoint.`,
+    });
+  }
 
   if (config.source === "NEXT_PUBLIC_APP_ENV" && vercelEnvironment) {
     checks.push(
@@ -349,4 +378,28 @@ export function getEnvironmentBadgeVariant(): AppEnvironment {
 
 export function getEnvironmentLabel(): string {
   return getEnvironmentConfig().label;
+}
+
+export function getEnvironmentHealth(): EnvironmentHealth {
+  const config = getEnvironmentConfig();
+
+  return {
+    app: "planovac",
+    phase: "F0-07",
+    ok: config.isConsistent,
+    status: config.isConsistent ? "pass" : "warning",
+    checkedAt: new Date().toISOString(),
+    environment: config.environment,
+    source: config.source,
+    sourceValue: config.sourceValue,
+    description: config.description,
+    baseUrl: config.baseUrl,
+    baseUrlSource: config.baseUrlSource,
+    deploymentUrl: config.deploymentUrl,
+    branchUrl: config.branchUrl,
+    productionUrl: config.productionUrl,
+    gitCommitRef: config.gitCommitRef,
+    commitSha: config.commitSha,
+    checks: config.checks,
+  };
 }

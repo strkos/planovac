@@ -1,12 +1,13 @@
 # GitHub CI
 
-Tento dokument je zdrojem pravdy pro backlogovou polozku **F0-05: GitHub CI**.
+Tento dokument je zdrojem pravdy pro backlogovou polozku **F0-05: GitHub CI** a navazujici minimum z **F0-07: Smoke test a diagnostika**.
 
 Jeho cilem je:
 
 - popsat workflow spoustene pro pull requesty a zmeny v `main`,
 - vymezit minimalni povinne status checks pro merge do `main`,
-- zapsat, jake validace repo aktualne provadi nad konfiguraci, Vercel integraci a databazovymi artefakty.
+- zapsat, jake validace repo aktualne provadi nad konfiguraci, Vercel integraci a databazovymi artefakty,
+- popsat, jak na workflow navazuje manualne spoustene smoke overeni proti nasazene URL.
 
 ## Umisteni workflow
 
@@ -87,7 +88,8 @@ Skript `scripts/validate-env-example.mjs` overuje, ze:
 - `.env.example` obsahuje vsechny klice potrebne od F0-03 a F0-04,
 - zadny klic neni v sablone duplicitne,
 - `NEXT_PUBLIC_APP_ENV` ma vychozi hodnotu `local`,
-- `SUPABASE_PREVIEW_SCHEMA_PREFIX` ma vychozi hodnotu `preview_`.
+- `SUPABASE_PREVIEW_SCHEMA_PREFIX` ma vychozi hodnotu `preview_`,
+- `SMOKE_BASE_URL` je pritomna jako vstup pro smoke scenar F0-07.
 
 To pomaha zachytit nekompletni nebo rozbitou sablonu konfigurace driv, nez se zmena projevi az pri spousteni aplikace nebo preview prostredi.
 
@@ -102,6 +104,27 @@ Skript `scripts/validate-supabase-artifacts.mjs` overuje, ze:
 - `seed.sql` obsahuje demo data pro Uzivatele, feature requesty a registry preview schemat.
 
 Nejde jeste o plne spousteni migraci v CI. Cilem F0-05 je minimalni a citelna kontrola, ze repozitar nadale obsahuje konzistentni databazovy baseline pro dalsi delivery faze.
+
+## Navazujici smoke overeni z F0-07
+
+F0-07 doplnuje do repozitare:
+
+- endpoint `GET /api/health` s JSON diagnostikou prostredi,
+- skript `npm run smoke`, ktery pouziva `SMOKE_BASE_URL`,
+- overeni homepage i health endpointu proti bezici lokalni, preview nebo production URL.
+
+Smoke overeni zatim neni samostatnym povinnym GitHub status checkem, protoze:
+
+- preview URL nevznika primo v GitHub Actions workflow tohoto repozitare,
+- prvni end-to-end deploy se ma nejprve overit provozne nad realnym Vercel prostredim,
+- F0-08 ma navazat zkusebnim delivery pruchodem pres PR a merge.
+
+Minimalni manualni provozni postup po deployi:
+
+1. ziskejte preview nebo production URL z Vercelu,
+2. nastavte `SMOKE_BASE_URL=https://<nasazena-url>`,
+3. spustte `npm run smoke`,
+4. pri chybe zkontrolujte homepage diagnostiku a JSON vystup z `/api/health`.
 
 ## Nastaveni v GitHubu
 

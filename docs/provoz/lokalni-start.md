@@ -1,6 +1,6 @@
 # Lokální start projektu
 
-Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace**, **F0-03: Konfigurace prostředí a secretů**, **F0-04: Supabase baseline**, **F0-05: GitHub CI** a **F0-06: Vercel integrace**.
+ Tento dokument popisuje minimální postup pro spuštění aplikační kostry rozšířené v rámci backlogových položek **F0-02: Založení minimální aplikace**, **F0-03: Konfigurace prostředí a secretů**, **F0-04: Supabase baseline**, **F0-05: GitHub CI**, **F0-06: Vercel integrace** a **F0-07: Smoke test a diagnostika**.
 
 ## Předpoklady
 
@@ -76,6 +76,33 @@ npm run lint
 npm run build
 ```
 
+## Smoke overeni
+
+Vychozi lokalni smoke scenar pouziva `SMOKE_BASE_URL` z `.env.local`. Pro lokalni beh tak staci, aby aplikace bezela na `http://localhost:3000`:
+
+```bash
+npm run dev
+```
+
+V druhem terminalu potom spustte:
+
+```bash
+npm run smoke
+```
+
+Smoke skript overi:
+
+- `GET /api/health` vracejici JSON diagnostiku prostredi,
+- HTTP 200 z domovske stranky,
+- pritomnost markeru F0-07 na homepage,
+- navrat informaci o prostredi, zdroji detekce a seznamu kontrol.
+
+Pro preview nebo production deployment staci pred spustenim prepsat `SMOKE_BASE_URL`, napriklad:
+
+```bash
+SMOKE_BASE_URL=https://<preview-host> npm run smoke
+```
+
 ## Repo validace
 
 ```bash
@@ -100,7 +127,7 @@ Tento krok lokálně ověří stejnou minimální vrstvu commitovaných artefakt
 - `docs/provoz/` - provozní dokumentace
 - `.github/workflows/` - GitHub CI workflow a navazující delivery automatizace
 
-## Co přidává F0-04 az F0-06
+## Co pridava F0-04 az F0-07
 
 ### F0-04
 
@@ -124,6 +151,13 @@ Tento krok lokálně ověří stejnou minimální vrstvu commitovaných artefakt
 - diagnostiku preview a production prostredi v domovske strance aplikace,
 - provozni dokument [Vercel integrace](vercel-integrace.md) s mapovanim env promennych a rollback postupem.
 
+### F0-07
+
+- route handler `app/api/health/route.ts` pro strojove citelnou diagnostiku deploymentu,
+- smoke runner `tests/smoke/run-smoke.mjs`,
+- `npm run smoke` pro lokalni, preview i production overeni nad `SMOKE_BASE_URL`,
+- rozsireni homepage o viditelny smoke scenar a navaznost na runtime endpoint.
+
 ## Omezení této etapy
 
-Tato etapa stale zamerne neresi plne automatizovane nasazovani databazovych zmen ani orchestraci preview snapshotu. F0-06 uz uzavira repo-side pripravu Vercel preview a production konfigurace, ale realny smoke scenar a zkusebni end-to-end delivery pruchod patri az do navazujicich polozek F0-07 a F0-08.
+Tato etapa stale zamerne neresi plne automatizovane nasazovani databazovych zmen ani orchestraci preview snapshotu. F0-07 uz doplnuje zakladni smoke scenar nad nasazenou aplikaci, ale zkusebni end-to-end delivery pruchod pres pull request a merge patri az do navazujici polozky F0-08.

@@ -183,6 +183,11 @@ a {
   padding-left: 18px;
 }
 
+.card ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
 .card-grid,
 .status-grid {
   display: grid;
@@ -311,6 +316,25 @@ a {
 
 .next-steps {
   margin-top: 32px;
+}
+
+.inline-code-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.inline-code-list li {
+  background: #f5f7fb;
+  border: 1px solid #d8e0ee;
+  border-radius: 999px;
+  color: #23406a;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 6px 10px;
 }
 
 @media (max-width: 720px) {
