@@ -1,5 +1,6 @@
 const DEFAULT_TIMEOUT_MS = 15_000;
 const requiredHomePageMarkers = [
+  "planovac / F1-01",
   "planovac / F0-07",
   "Smoke scenar a diagnostika maji byt dohledatelne z aplikace i runtime endpointu.",
   "Zdravotni endpoint",
@@ -67,6 +68,14 @@ async function validateHealth(baseUrl) {
 
   if (!Array.isArray(payload.checks) || payload.checks.length === 0) {
     throw new Error("Health endpoint did not return environment checks.");
+  }
+
+  if (!payload.auth || payload.auth.provider !== "supabase-auth") {
+    throw new Error("Health endpoint did not return F1-01 auth metadata.");
+  }
+
+  if (!Array.isArray(payload.auth.checks) || payload.auth.checks.length === 0) {
+    throw new Error("Health endpoint did not return auth checks.");
   }
 
   return payload;

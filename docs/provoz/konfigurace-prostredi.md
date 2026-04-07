@@ -50,6 +50,8 @@ Toto pravidlo je důležité proto, aby:
 
 Detail fáze 1 doporučuje pro první implementaci použít **Supabase Auth jako jedinou auth bránu** bez externího poskytovatele identity a přihlášení řešit přes **email + magic link**.
 
+Uzavření backlogové položky **F1-01: Auth vstupy a rozhodnutí** je rozepsané v dokumentu [F1-01: Auth vstupy a rozhodnutí](f1-01-auth-vstupy-a-rozhodnuti.md).
+
 Pro tento směr je důležité rozlišit dvě vrstvy konfigurace:
 
 1. **Konfigurace aplikace**
@@ -76,6 +78,14 @@ Před implementací mají být v auth konfiguraci připravené minimálně tyto 
 - `https://<produkční-doména>/auth/callback`
 
 Pokud se bude používat samostatná chybová route, je vhodné mít zdokumentovaný i návrat na veřejnou vstupní stránku nebo na `/auth/chyba`.
+
+Pro commitovanou konfiguraci platí:
+
+| Prostředí | `NEXT_PUBLIC_APP_BASE_URL` | `SUPABASE_AUTH_REDIRECT_PATH` | Výsledná callback URL |
+| --- | --- | --- | --- |
+| `local` | `http://localhost:3000` | `/auth/callback` | `http://localhost:3000/auth/callback` |
+| `preview` | `https://<preview-host>` | `/auth/callback` | `https://<preview-host>/auth/callback` |
+| `production` | `https://<produkční-doména>` | `/auth/callback` | `https://<produkční-doména>/auth/callback` |
 
 ## Zásady práce s proměnnými
 
@@ -140,6 +150,12 @@ V této fázi ještě nejsou jmenovitě určení vlastníci produkčního Vercel
 - **preview a production veřejné proměnné** se mají spravovat ve Vercel environment variables,
 - **CI-only neveřejné hodnoty** se mají spravovat v GitHub secrets,
 - **Supabase integrační hodnoty** se mají držet v odpovídajícím prostředí tak, aby preview a production neměly sdílené tajné klíče bez jasného důvodu.
+
+Pro auth vrstvu se toto rozdělení zpřesňuje takto:
+
+- **redirect allowlist, email login a magic link šablony** spravuje správce daného Supabase projektu,
+- **veřejné auth vstupy aplikace** jako `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` a `SUPABASE_AUTH_REDIRECT_PATH` se spravují v `.env.local` nebo ve Vercel env vars podle prostředí,
+- **neveřejný seznam testovacích identit** se nevede v gitu a zůstává mimo repozitář.
 
 Jakmile budou potvrzeni vlastníci prostředí, má se tento dokument doplnit o konkrétní odpovědnost za:
 

@@ -569,6 +569,8 @@ Pro praktické spuštění implementace je vhodné rozdělit fázi 1 minimálně
 - potvrdit zdroj role `admin` / `člen`,
 - zapsat způsob bootstrapu testovacích identit.
 
+Repozitářový výstup této položky je zapsaný v dokumentu [F1-01: Auth vstupy a rozhodnutí](provoz/f1-01-auth-vstupy-a-rozhodnuti.md).
+
 ### F1-02: Veřejný vstup a login/logout
 
 - upravit landing page pro nepřihlášeného Uživatele,
@@ -619,12 +621,12 @@ Před prvním kódovým PR mají být potvrzené tyto body:
 
 - [x] je potvrzeno, že první auth tok běží přes Supabase Auth bez externího poskytovatele identity,
 - [x] je potvrzeno, že první přihlášení používá email + magic link,
-- [ ] jsou zapsané redirect URL pro local, preview a production,
-- [ ] je rozhodnutý zdroj role `admin` / `člen`,
-- [ ] existuje alespoň jedna testovací identita `admin`,
-- [ ] existuje alespoň jedna testovací identita `člen`,
-- [ ] je jasné, kdo spravuje auth konfiguraci v Supabase a ve Vercelu,
-- [ ] je doplněná dokumentace potřebných proměnných prostředí.
+- [x] jsou zapsané redirect URL pro local, preview a production,
+- [x] je rozhodnutý zdroj role `admin` / `člen`,
+- [x] existuje alespoň jedna testovací identita `admin`, nebo je dopsaný postup jejího vytvoření,
+- [x] existuje alespoň jedna testovací identita `člen`, nebo je dopsaný postup jejího vytvoření,
+- [x] je jasné, kdo a v jakém systému spravuje auth konfiguraci v Supabase a ve Vercelu,
+- [x] je doplněná dokumentace potřebných proměnných prostředí.
 
 ## Checklist uzavření fáze 1
 

@@ -58,6 +58,14 @@ Pro navazující Fázi 1 se jako výchozí zadání počítá s tím, že:
 - minimální role `admin` a `člen` budou načítané server-side z aplikační tabulky v Supabase,
 - pro ověření budou připravené dvě účelové identity: jedna `admin`, jedna `člen`.
 
+Konkrétní rozhodnutí, redirect URL a bootstrap testovacích identit pro tuto položku shrnuje dokument [F1-01: Auth vstupy a rozhodnutí](f1-01-auth-vstupy-a-rozhodnuti.md).
+
+Pro lokální běh zůstává důležité:
+
+- mít v `.env.local` skutečné hodnoty `NEXT_PUBLIC_SUPABASE_URL` a `NEXT_PUBLIC_SUPABASE_ANON_KEY`, pokud chcete navazovat autentizací,
+- ponechat `SUPABASE_AUTH_REDIRECT_PATH=/auth/callback`, pokud není výslovně zdokumentované jiné callback chování,
+- počítat s tím, že F1-01 zatím uzavírá vstupy a diagnostiku, nikoliv plný login formulář.
+
 Pokud chcete lokálně připravit i databázové artefakty pro navazující iterace, použijte:
 
 - `supabase/migrations/20260331120000_f0_04_supabase_baseline.sql` jako první verzovanou migraci,
